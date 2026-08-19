@@ -77,11 +77,15 @@
   .frame{position:relative; z-index:7; flex:1; display:flex; flex-direction:column;
          width:100%; max-width:1440px; margin:0 auto}
 
-  /* The sky runs edge to edge under the notch (viewport-fit=cover); only the
-     CONTENT steps back off it. */
-  .nav{display:flex; align-items:center; justify-content:space-between;
-       padding:calc(26px + env(safe-area-inset-top)) calc(44px + env(safe-area-inset-right))
-               26px calc(44px + env(safe-area-inset-left))}
+  /* The nav is FULL WIDTH — deliberately outside the 1440 frame that centres
+     the wordmark. Boxed into that frame, the logo and CTA drifted inward on
+     anything wider than 1440 (on a 1920 screen they sat ~284px off the edge);
+     now they hug the viewport with a fixed gutter no matter how wide it gets.
+     The sky already runs edge to edge under the notch (viewport-fit=cover);
+     only the content steps back off it. */
+  .nav{position:relative; z-index:7; display:flex; align-items:center; justify-content:space-between;
+       padding:calc(26px + env(safe-area-inset-top)) calc(28px + env(safe-area-inset-right))
+               26px calc(28px + env(safe-area-inset-left))}
   .brand{display:flex; align-items:center; gap:13px; color:var(--cream)}
   .brand span{font-family:var(--font-primary); font-size:14px; font-weight:800;
               letter-spacing:-.01em; line-height:.9}
@@ -118,8 +122,8 @@
   /* ── Phone (board: Landing Page REAL v2 Mobile) ── two clouds instead of
         three, brand + "Get the app" only, and a tighter button. ── */
   @media (max-width:640px){
-    .nav{padding:calc(20px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))
-                 0 calc(20px + env(safe-area-inset-left))}
+    .nav{padding:calc(20px + env(safe-area-inset-top)) calc(18px + env(safe-area-inset-right))
+                 0 calc(18px + env(safe-area-inset-left))}
     .brand{gap:10px}
     .brand span{font-size:11px}
     .nav-link{display:none}
@@ -161,17 +165,17 @@
   <div class="cloud c2"></div>
   <div class="cloud c3"></div>
 
-  <div class="frame">
-    <div class="nav">
-      <a class="brand" href="/">
-        <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
-        <span>WIN<br>YOUR<br>MORNING</span>
-      </a>
-      <div class="nav-links">
-        <a class="nav-cta" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
-      </div>
+  <div class="nav">
+    <a class="brand" href="/">
+      <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
+      <span>WIN<br>YOUR<br>MORNING</span>
+    </a>
+    <div class="nav-links">
+      <a class="nav-cta" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
     </div>
+  </div>
 
+  <div class="frame">
     <div class="content">
       <h1>win your<br>morning.</h1>
       <svg class="squiggle" width="420" height="24" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
