@@ -62,7 +62,17 @@
 
   /* The sky is real footage; the gradient above is its poster AND its fallback,
      so a blocked or still-loading video leaves the same composition behind. */
-  .herovid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  /* Sized to COVER without relying on object-fit. Safari letterboxes a video
+     laid out with inset:0 + object-fit:cover — a 16:9 clip in a portrait
+     viewport got centred with the blue gradient banding above and below it,
+     which is what read as bezels on the phone. The min-width/min-height + auto
+     pair is the technique object-fit was meant to replace and that Safari has
+     always honoured: the clip grows until it overflows BOTH axes and the
+     centring transform crops the excess evenly. scale() then pushes in a little
+     further, so no subpixel sliver of gradient can ever reach an edge. */
+  .herovid{position:absolute; top:50%; left:50%;
+           min-width:100%; min-height:100%; width:auto; height:auto;
+           transform:translate(-50%,-50%) scale(1.06);
            z-index:0; pointer-events:none}
   .wash{position:absolute; inset:0; z-index:1; pointer-events:none;
         background:linear-gradient(178deg,rgba(76,134,198,.62) 0%,rgba(76,134,198,.5) 34%,
