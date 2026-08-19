@@ -2,13 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- viewport-fit=cover: without it iOS keeps the content OUT of the notch and
+     home-indicator strips and fills them with the page background colour, which
+     is exactly the blue band that showed above and below the sky. The nav pads
+     itself back off the safe areas below. -->
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Win Your Morning — your friends are the alarm clock</title>
 <meta name="description" content="Your friends are the alarm clock. Make your promises the night before, prove it with a photo by the deadline, or wake up as Bum of the Day.">
 
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-<meta name="theme-color" content="#4C86C6">
+<!-- Matches the TOP of the sky gradient, so Safari's own bars tint into the
+     picture instead of banding against it (the old #4C86C6 was the gradient's
+     30% stop — a visibly different blue from the edge it sat next to). -->
+<meta name="theme-color" content="#6FA3DA">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Win Your Morning">
@@ -37,11 +44,20 @@
   /* ONE screen, no scroll — the hero IS the page. The how-it-works and FAQ
      sections were pulled back out on 2026-08-19; they land later. */
   html,body{margin:0; height:100%; overflow:hidden}
-  body{font-family:var(--font-secondary); background:#4C86C6; color:var(--cream);
-       -webkit-font-smoothing:antialiased}
+  /* The body carries the SAME gradient as the hero, not a flat blue. Safari's
+     rubber-band overscroll paints the body behind the page, and a flat colour
+     there read as blue bands top and bottom. */
+  body{font-family:var(--font-secondary); color:var(--cream);
+       background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 30%,#8DB8E4 68%,#CFE0F1 100%);
+       -webkit-font-smoothing:antialiased; overscroll-behavior:none}
   a{text-decoration:none}
 
-  .hero{position:relative; height:100svh; overflow:hidden; display:flex; flex-direction:column;
+  /* FIXED, not 100svh. `svh` is the SMALL viewport height — the page measured
+     as if Safari's chrome were always expanded — so the moment that chrome
+     collapsed the visible area grew taller than the hero and the body showed
+     through above and below. A fixed inset:0 box is pinned to the viewport
+     itself, so it stays exactly full-bleed through every chrome transition. */
+  .hero{position:fixed; inset:0; overflow:hidden; display:flex; flex-direction:column;
         background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 30%,#8DB8E4 68%,#CFE0F1 100%)}
 
   /* The sky is real footage; the gradient above is its poster AND its fallback,
@@ -61,7 +77,11 @@
   .frame{position:relative; z-index:7; flex:1; display:flex; flex-direction:column;
          width:100%; max-width:1440px; margin:0 auto}
 
-  .nav{display:flex; align-items:center; justify-content:space-between; padding:26px 44px}
+  /* The sky runs edge to edge under the notch (viewport-fit=cover); only the
+     CONTENT steps back off it. */
+  .nav{display:flex; align-items:center; justify-content:space-between;
+       padding:calc(26px + env(safe-area-inset-top)) calc(44px + env(safe-area-inset-right))
+               26px calc(44px + env(safe-area-inset-left))}
   .brand{display:flex; align-items:center; gap:13px; color:var(--cream)}
   .brand span{font-family:var(--font-primary); font-size:14px; font-weight:800;
               letter-spacing:-.01em; line-height:.9}
@@ -98,7 +118,8 @@
   /* ── Phone (board: Landing Page REAL v2 Mobile) ── two clouds instead of
         three, brand + "Get the app" only, and a tighter button. ── */
   @media (max-width:640px){
-    .nav{padding:20px 20px 0}
+    .nav{padding:calc(20px + env(safe-area-inset-top)) calc(20px + env(safe-area-inset-right))
+                 0 calc(20px + env(safe-area-inset-left))}
     .brand{gap:10px}
     .brand span{font-size:11px}
     .nav-link{display:none}
@@ -108,7 +129,7 @@
     .c2{right:-80px; top:auto; bottom:90px; width:340px; height:220px; background:rgba(255,255,255,.24); filter:blur(44px)}
     .c3{display:none}
 
-    .content{padding:0 20px 10vh}
+    .content{padding:0 20px calc(10vh + env(safe-area-inset-bottom))}
     h1{font-size:clamp(40px,13.3vw,52px)}
     .squiggle{width:160px; margin-top:12px; stroke-width:11}
     .appstore{margin-top:36px; min-height:46px; padding:12px 22px}
