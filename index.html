@@ -214,63 +214,101 @@
 
 <script>
 /* ── Hero video ───────────────────────────────────────────────────────────
-   The src is attached here rather than in the markup so `prefers-reduced-motion`
-   skips the DOWNLOAD outright, not just the playback. Autoplay needs muted +
-   playsinline (both on the element); if play() is refused we leave the gradient
-   sky showing, which is the same picture without the motion. */
+   Coming back from the iOS home screen leaves this video wedged in one of two
+   different ways, and they need different cures:
+
+     a) It is simply PAUSED. iOS stops background media and never restarts it.
+        play() fixes that — but the first call after returning is usually
+        rejected, because the page is visible before it is fully foregrounded.
+        So retry on a backoff rather than firing once and swallowing the error.
+
+     b) It is still "playing" — paused is false, currentTime advances — but the
+        PICTURE is frozen, because iOS came back with a stale compositing layer.
+        No amount of play()/load() on that node repaints it. Only a brand new
+        element, which gets a brand new layer, clears it.
+
+   Since (b) reports itself as healthy, we cannot detect it by asking the
+   element how it is doing. So the return handler tries the cheap fix and then
+   VERIFIES it: if the clock has not moved a beat later, the node is wedged and
+   we rebuild it. The clip is a 5s ambient loop, so restarting is invisible. */
 (function () {
+  var HERO_SRC = 'assets/hero.mp4';
   var v = document.getElementById('heroVid');
   if (!v) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  v.src = 'assets/hero.mp4';
 
-  // iOS pauses background video when you leave Safari and never resumes it. The
-  // naive fix — one play() per return event — was not enough in practice, for
-  // two reasons this handles:
-  //
-  //  1. The FIRST play() after a return is usually rejected: the page is visible
-  //     but not yet fully foregrounded, and a rejected promise that we swallowed
-  //     silently left the sky frozen. So retry on a backoff instead of giving up.
-  //  2. iOS can drop the decoded buffer entirely while backgrounded, leaving
-  //     readyState at 0 — nothing to play. That needs load() before play(); a
-  //     bare play() on an empty element resolves to nothing visible.
   var tries = 0;
-  function ensurePlaying() {
-    if (document.hidden) return;
-    if (!v.paused && !v.ended && v.readyState >= 3) { tries = 0; return; }
+
+  function play() {
+    if (document.hidden || !v) return;
     if (v.readyState === 0) { try { v.load(); } catch (e) {} }
     var p = v.play();
     if (p && p.catch) {
       p.catch(function () {
-        if (tries++ < 10) setTimeout(ensurePlaying, 150 + tries * 150);
+        if (tries++ < 8) setTimeout(play, 150 + tries * 150);
       });
     }
   }
 
-  ensurePlaying();
-  v.addEventListener('canplay', ensurePlaying);
-  v.addEventListener('loadeddata', ensurePlaying);
-  // The catch-all: whatever pauses it — the system, a decoder eviction, an
-  // interruption we never see an event for — this notices the paused state
-  // itself rather than trying to enumerate the causes.
-  v.addEventListener('pause', function () {
-    if (!document.hidden) setTimeout(ensurePlaying, 120);
-  });
+  function wire() {
+    v.addEventListener('canplay', play);
+    v.addEventListener('loadeddata', play);
+    // Catch-all for case (a): rather than enumerating every way iOS can stop
+    // playback, notice the paused state itself and undo it.
+    v.addEventListener('pause', function () {
+      if (!document.hidden) setTimeout(play, 120);
+    });
+  }
 
-  // Each of these is a different way back onto the page: visibilitychange for a
-  // tab switch or app switch, pageshow for a bfcache restore (which fires no
-  // visibility change at all), focus/resume for the window regaining it.
-  document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) { tries = 0; ensurePlaying(); }
-  });
-  window.addEventListener('pageshow', function () { tries = 0; ensurePlaying(); });
-  window.addEventListener('focus', function () { tries = 0; ensurePlaying(); });
+  // Case (b): a fresh node, so the compositor has no stale layer to reuse.
+  function rebuild() {
+    var fresh = document.createElement('video');
+    fresh.id = v.id;
+    fresh.className = v.className;
+    fresh.muted = true;
+    fresh.defaultMuted = true;
+    fresh.loop = true;
+    fresh.autoplay = true;
+    fresh.setAttribute('playsinline', '');
+    fresh.setAttribute('webkit-playsinline', '');
+    fresh.setAttribute('preload', 'auto');
+    fresh.setAttribute('aria-hidden', 'true');
+    v.parentNode.replaceChild(fresh, v);
+    v = fresh;
+    wire();
+    v.src = HERO_SRC;
+    try { v.load(); } catch (e) {}
+    tries = 0;
+    play();
+  }
 
-  // Last resort. If iOS refuses every programmatic play — which it does when it
-  // decides the return wasn't user-initiated enough — the next touch anywhere on
-  // the page is a gesture, and a gesture is always allowed to start playback.
+  function onReturn() {
+    if (document.hidden) return;
+    tries = 0;
+    var before = v.currentTime;
+    play();
+    setTimeout(function () {
+      if (document.hidden || !v) return;
+      // Clock never moved, or it is sitting paused despite the retries — wedged.
+      if (v.paused || v.currentTime === before) rebuild();
+    }, 700);
+  }
+
+  wire();
+  v.src = HERO_SRC;
+  play();
+
+  // Each is a different way back onto the page: visibilitychange for a tab or
+  // app switch, pageshow for a bfcache restore (which fires no visibility
+  // change at all), focus for the window regaining it.
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) onReturn(); });
+  window.addEventListener('pageshow', onReturn);
+  window.addEventListener('focus', onReturn);
+
+  // Last resort: if iOS refuses every programmatic play, a touch is a gesture,
+  // and a gesture is always allowed to start playback.
   ['touchstart', 'click'].forEach(function (evt) {
-    document.addEventListener(evt, function () { tries = 0; ensurePlaying(); }, { passive: true });
+    document.addEventListener(evt, function () { tries = 0; play(); }, { passive: true });
   });
 })();
 
