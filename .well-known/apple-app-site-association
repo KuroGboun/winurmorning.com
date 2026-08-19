@@ -1,0 +1,15 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "4B4U9N879U.com.kuro.winyourmorning",
+        "paths": ["/join/*"]
+      },
+      {
+        "appID": "4B4U9N879U.com.kuro.winyourmorning.dev",
+        "paths": ["/join/*"]
+      }
+    ]
+  }
+}

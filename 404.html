@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Win Your Morning</title>
+<!--
+  GitHub Pages serves THIS file for any unmatched path — which is what makes
+  it the Universal Link fallback for /join/<code>. Nothing hosts a real page
+  per invite code; iOS never even requests one when the app is installed
+  (Associated Domains intercepts the tap before Safari opens). This only
+  renders when the app is NOT installed, which is the whole point.
+
+  TO SWITCH TO THE APP STORE ONCE THE APP IS LIVE: change DESTINATION_URL
+  below to the App Store product page. Nothing else on this file needs to
+  change — no app rebuild, no new AASA entry, no DNS.
+-->
+<style>
+  html,body{height:100%;margin:0}
+  body{
+    font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+    background:#4C86C6;color:#F4ECD8;
+    display:grid;place-items:center;text-align:center;padding:24px;
+    box-sizing:border-box;
+  }
+  main{max-width:360px}
+  h1{font-size:22px;margin:0 0 8px}
+  p{font-size:15px;line-height:1.5;opacity:.9;margin:0 0 24px}
+  a.cta{
+    display:inline-block;background:#F4ECD8;color:#4C86C6;
+    font-weight:600;text-decoration:none;
+    padding:12px 28px;border-radius:999px;font-size:15px;
+  }
+  code{background:rgba(244,236,216,.15);padding:2px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<main>
+  <h1>You've been invited to Win Your Morning 🌅</h1>
+  <p id="codeLine">Someone wants you in their squad.</p>
+  <a class="cta" id="ctaLink" href="/win-your-morning/">Get on the list</a>
+</main>
+<script>
+  // DESTINATION_URL is the one line that changes at App Store launch.
+  var DESTINATION_URL = "/win-your-morning/";
+
+  // The invite code is still sitting in the URL Safari tried to load
+  // (/join/ABC123) even though nothing lives at that path — no server, just
+  // reading it back out client-side for a slightly less generic line.
+  var m = location.pathname.match(/\/join\/([^\/]+)/);
+  if (m && m[1]) {
+    document.getElementById('codeLine').textContent =
+      "Someone wants you in their squad. Once you have the app, enter code " + m[1] + " to join.";
+  }
+  document.getElementById('ctaLink').href = DESTINATION_URL;
+</script>
+</body>
+</html>

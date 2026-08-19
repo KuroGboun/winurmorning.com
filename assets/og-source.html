@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- Source for og.png (1200×630) — the link-preview card. Re-render after any
+     copy/brand change:
+     "Google Chrome" --headless=new --window-size=1200,630 \
+        --screenshot=assets/og.png file://…/assets/og-source.html
+     Kept in the repo so the preview can be regenerated deterministically. -->
+<html><head><meta charset="utf-8"><style>
+  *{box-sizing:border-box;margin:0}
+  @font-face{font-family:'B';src:local('Bricolage Grotesque')}
+  html,body{width:1200px;height:630px;overflow:hidden}
+  .card{position:relative;width:1200px;height:630px;
+        background:linear-gradient(160deg,#6FA3DA 0%,#4C86C6 42%,#8DB8E4 78%,#CFE0F1 100%);
+        font-family:'Bricolage Grotesque',sans-serif;overflow:hidden}
+  .blob{position:absolute;border-radius:50%;filter:blur(52px);background:rgba(255,255,255,.5)}
+  .b1{left:520px;top:-60px;width:520px;height:300px}
+  .b2{left:180px;top:360px;width:640px;height:260px;background:rgba(255,255,255,.42)}
+  .content{position:absolute;left:74px;top:120px;z-index:3;width:720px}
+  .kicker{display:inline-block;transform:rotate(-4deg);background:#C4562F;color:#F4ECD8;
+          font-size:19px;font-weight:800;letter-spacing:.14em;padding:9px 15px;border-radius:9px}
+  h1{margin:22px 0 0;font-size:118px;font-weight:800;line-height:.82;letter-spacing:-.05em;color:#F4ECD8}
+  .sq{display:block;margin-top:12px}
+  .tag{font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;font-size:27px;line-height:1.35;
+       color:rgba(244,236,216,.94);margin-top:26px;max-width:600px}
+  .float{position:absolute;filter:drop-shadow(0 16px 22px rgba(20,40,70,.28))}
+  .float img{width:100%;height:100%;object-fit:contain;display:block}
+</style></head>
+<body>
+  <div class="card">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+
+    <div class="float" style="left:864px; top:96px;  width:150px; height:150px; transform:rotate(-6deg)"><img src="emoji-obj5.png"  alt=""></div>
+    <div class="float" style="left:1030px;top:250px; width:120px; height:120px; transform:rotate(7deg)"><img src="emoji-obj2.png"  alt=""></div>
+    <div class="float" style="left:836px; top:322px; width:120px; height:120px; transform:rotate(-3deg)"><img src="emoji-obj1.png"  alt=""></div>
+    <div class="float" style="left:1006px;top:452px; width:132px; height:132px; transform:rotate(4deg)"><img src="emoji-obj13.png" alt=""></div>
+    <div class="float" style="left:842px; top:486px; width:110px; height:110px; transform:rotate(-5deg)"><img src="emoji-obj10.png" alt=""></div>
+
+    <div class="content">
+      <span class="kicker">RISE OR BE ROASTED</span>
+      <h1>Win your<br>morning</h1>
+      <svg class="sq" width="360" height="20" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="7" stroke-linecap="round"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
+      <p class="tag">Your friends are the alarm clock. Prove your morning by the deadline — or wake up as Bum of the Day.</p>
+    </div>
+  </div>
+</body></html>

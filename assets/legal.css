@@ -1,0 +1,63 @@
+/* Legal pages — the landing page's design system, in a reading layout.
+   Same token names and the same two-voice type rule the landing page follows:
+   headings and the wordmark are the display face (Bricolage), running copy is
+   the system font. A policy is a document someone actually sits and reads, so
+   the measure is narrow and the body face stays system throughout. */
+
+*{box-sizing:border-box}
+:root{
+  --paper:#FFFFFF; --ink:#1E2A24; --forest:#2E4A3B;
+  --terra:#C4562F; --gold:#E0A032; --amber:#F2B84B;
+  --cream:#F4ECD8; --plum:#3A2E4A; --muted:#9A968B;
+  --line:rgba(30,42,36,.14);
+  --font-primary:'Bricolage Grotesque',sans-serif;
+  --font-secondary:-apple-system,'SF Pro Text',system-ui,sans-serif;
+}
+html{-webkit-text-size-adjust:100%}
+body{margin:0; background:var(--paper); color:var(--ink);
+     font-family:var(--font-secondary); font-size:16px; line-height:1.65;
+     -webkit-font-smoothing:antialiased}
+a{color:var(--terra); text-decoration:none}
+a:hover{color:var(--gold)}
+
+/* ── Brand bar ── the sky strip the landing page opens on, cut down to a
+      header so the two pages read as one site. ── */
+.legal-nav{background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 62%,#8DB8E4 100%);
+           padding:22px 24px}
+.legal-nav-in{max-width:680px; margin:0 auto; display:flex; align-items:center;
+              justify-content:space-between; gap:16px}
+.brand{display:flex; align-items:center; gap:9px; color:var(--cream)}
+.brand span{font-family:var(--font-primary); font-size:12px; font-weight:800;
+            letter-spacing:-.01em; line-height:.9}
+.brand:hover{color:#FFFFFF}
+.back{font-family:var(--font-secondary); font-size:14px; font-weight:600;
+      color:rgba(244,236,216,.92)}
+.back:hover{color:#FFFFFF}
+
+main{max-width:680px; margin:0 auto; padding:52px 24px 88px}
+h1{font-family:var(--font-primary); font-size:clamp(34px,7vw,46px); font-weight:800;
+   letter-spacing:-.035em; line-height:1; margin:0}
+.squiggle{display:block; margin-top:12px; width:190px; height:auto}
+.meta{font-family:var(--font-secondary); font-size:14px; font-weight:600;
+      letter-spacing:.02em; color:var(--muted); margin:16px 0 30px}
+h2{font-family:var(--font-primary); font-size:21px; font-weight:800;
+   letter-spacing:-.02em; margin:36px 0 8px}
+p{margin:0 0 14px}
+ul{padding-left:20px; margin:0 0 14px}
+li{margin-bottom:7px}
+strong{font-weight:700}
+
+/* A quiet card for the one line on each page that people actually come to
+   find — how to delete their data, and what the app is. */
+.note{background:var(--cream); border-radius:18px; padding:20px 22px; margin:26px 0}
+.note p:last-child{margin-bottom:0}
+
+.legal-foot{border-top:1px solid var(--line); margin-top:48px; padding-top:22px;
+            font-size:14px; color:var(--muted)}
+.legal-foot a{color:var(--muted); text-decoration:underline}
+.legal-foot a:hover{color:var(--ink)}
+
+@media (max-width:640px){
+  main{padding:38px 22px 64px}
+  .legal-nav{padding:18px 22px}
+}
