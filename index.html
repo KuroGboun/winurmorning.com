@@ -179,7 +179,7 @@
 <body>
 
 <section class="hero">
-  <video class="herovid" id="heroVid" muted loop playsinline preload="auto" aria-hidden="true"></video>
+  <video class="herovid" id="heroVid" muted loop autoplay playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
   <div class="wash"></div>
 
   <div class="cloud c1"></div>
@@ -223,19 +223,55 @@
   if (!v) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   v.src = 'assets/hero.mp4';
-  var go = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
-  go();
-  v.addEventListener('canplay', go, { once: true });
 
-  // iOS pauses background video when you leave the tab or switch apps, and does
-  // NOT resume on its own — the sky just sat frozen until a manual reload. Each
-  // of these is a different way back onto the page: visibilitychange for a tab
-  // switch, pageshow for a bfcache restore (which fires no visibility change at
-  // all), focus for a window regaining it. `go` is idempotent — calling it on an
-  // already-playing video is a no-op.
-  document.addEventListener('visibilitychange', function () { if (!document.hidden) go(); });
-  window.addEventListener('pageshow', go);
-  window.addEventListener('focus', go);
+  // iOS pauses background video when you leave Safari and never resumes it. The
+  // naive fix — one play() per return event — was not enough in practice, for
+  // two reasons this handles:
+  //
+  //  1. The FIRST play() after a return is usually rejected: the page is visible
+  //     but not yet fully foregrounded, and a rejected promise that we swallowed
+  //     silently left the sky frozen. So retry on a backoff instead of giving up.
+  //  2. iOS can drop the decoded buffer entirely while backgrounded, leaving
+  //     readyState at 0 — nothing to play. That needs load() before play(); a
+  //     bare play() on an empty element resolves to nothing visible.
+  var tries = 0;
+  function ensurePlaying() {
+    if (document.hidden) return;
+    if (!v.paused && !v.ended && v.readyState >= 3) { tries = 0; return; }
+    if (v.readyState === 0) { try { v.load(); } catch (e) {} }
+    var p = v.play();
+    if (p && p.catch) {
+      p.catch(function () {
+        if (tries++ < 10) setTimeout(ensurePlaying, 150 + tries * 150);
+      });
+    }
+  }
+
+  ensurePlaying();
+  v.addEventListener('canplay', ensurePlaying);
+  v.addEventListener('loadeddata', ensurePlaying);
+  // The catch-all: whatever pauses it — the system, a decoder eviction, an
+  // interruption we never see an event for — this notices the paused state
+  // itself rather than trying to enumerate the causes.
+  v.addEventListener('pause', function () {
+    if (!document.hidden) setTimeout(ensurePlaying, 120);
+  });
+
+  // Each of these is a different way back onto the page: visibilitychange for a
+  // tab switch or app switch, pageshow for a bfcache restore (which fires no
+  // visibility change at all), focus/resume for the window regaining it.
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { tries = 0; ensurePlaying(); }
+  });
+  window.addEventListener('pageshow', function () { tries = 0; ensurePlaying(); });
+  window.addEventListener('focus', function () { tries = 0; ensurePlaying(); });
+
+  // Last resort. If iOS refuses every programmatic play — which it does when it
+  // decides the return wasn't user-initiated enough — the next touch anywhere on
+  // the page is a gesture, and a gesture is always allowed to start playback.
+  ['touchstart', 'click'].forEach(function (evt) {
+    document.addEventListener(evt, function () { tries = 0; ensurePlaying(); }, { passive: true });
+  });
 })();
 
 /* ── Page-view ping ───────────────────────────────────────────────────────
