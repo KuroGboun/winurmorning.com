@@ -6,8 +6,8 @@
 <title>Win Your Morning — your friends are the alarm clock</title>
 <meta name="description" content="Your friends are the alarm clock. Make your promises the night before, prove it with a photo by the deadline, or wake up as Bum of the Day.">
 
-<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
 <meta name="theme-color" content="#4C86C6">
 
 <meta property="og:type" content="website">
@@ -27,106 +27,63 @@
 <style>
   *{box-sizing:border-box}
   :root{
-    --paper:#FFFFFF; --ink:#1E2A24; --forest:#2E4A3B; --forest-d:#22382E;
-    --terra:#C4562F; --terra-soft:#DB7A54; --gold:#E0A032; --amber:#F2B84B;
-    --cream:#F4ECD8; --plum:#3A2E4A; --lavender:#9A8CC4; --muted-line:rgba(30,42,36,.14);
+    --ink:#1E2A24; --cream:#F4ECD8; --gold:#E0A032; --amber:#F2B84B; --terra:#C4562F;
     --cta:#E0A032; --cta-text:#1E2A24; --cta-hover:#F2B84B;
-    /* Primary = the display face (the "Win your morning" wordmark + buttons);
-       secondary = system text for everything else. */
+    /* Primary = the display face (the wordmark, the hero, "App Store");
+       secondary = system text for the nav and the small print. */
     --font-primary:'Bricolage Grotesque',sans-serif;
     --font-secondary:-apple-system,'SF Pro Text',system-ui,sans-serif;
   }
-  html,body{margin:0}
-  /* The hero fills the first viewport (100svh); "How it works" and "FAQ" sit
-     below it, so the page scrolls now — this used to be a deliberate single
-     screen with no scroll at all, before those sections existed. */
-  body{font-family:var(--font-secondary); background:#4C86C6; color:var(--ink);
+  /* ONE screen, no scroll — the hero IS the page. The how-it-works and FAQ
+     sections were pulled back out on 2026-08-19; they land later. */
+  html,body{margin:0; height:100%; overflow:hidden}
+  body{font-family:var(--font-secondary); background:#4C86C6; color:var(--cream);
        -webkit-font-smoothing:antialiased}
   a{text-decoration:none}
 
-  /* Full-bleed: the sky runs edge to edge (no max-width here), so a wide screen
-     never shows the body colour as side bands. */
-  .page{width:100%; margin:0 auto; background:var(--paper)}
-
-  /* ── Hero ─────────────────────────────────────────────────────────── */
   .hero{position:relative; height:100svh; overflow:hidden; display:flex; flex-direction:column;
-        background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 34%,#8DB8E4 72%,#CFE0F1 100%);}
-  /* The layout stays composed in a centred 1440 frame; only the sky bleeds full
-     width. Floaters/nav/content anchor to THIS, so they never fly to the edges
-     of an ultra-wide monitor. */
-  .frame{position:relative; z-index:1; width:100%; max-width:1440px; margin:0 auto;
-         flex:1; display:flex; flex-direction:column}
-  /* Video + its wash sit UNDER the clouds/frame (z-index 0 and 0) and are only
-     revealed on phones — see the max-width:640 query. */
-  .herovid{display:none; position:absolute; inset:0; width:100%; height:100%;
-           object-fit:cover; z-index:0; pointer-events:none}
-  .vidwash{display:none; position:absolute; inset:0; z-index:0; pointer-events:none;
-           background:linear-gradient(178deg,rgba(76,134,198,.62) 0%,rgba(76,134,198,.5) 34%,
-                     rgba(141,184,228,.42) 70%,rgba(207,224,241,.5) 100%)}
-  .cloud{position:absolute; border-radius:50%; pointer-events:none}
-  .c1{left:-60px; top:120px; width:460px; height:240px; background:rgba(255,255,255,.42); filter:blur(38px)}
-  .c2{right:-80px; top:300px; width:560px; height:300px; background:rgba(255,255,255,.36); filter:blur(46px)}
-  .c3{left:18%; bottom:40px; width:62%; height:320px; background:rgba(255,255,255,.5); filter:blur(56px)}
+        background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 30%,#8DB8E4 68%,#CFE0F1 100%)}
 
-  /* The emoji live in a band. On desktop it fills the frame and they scatter to
-     the right of the copy; the phone media query turns it into a flow strip
-     between the caption and the form. Decorative only — not interactive. */
-  .floatband{position:absolute; inset:0; z-index:2; pointer-events:none}
-  .float{position:absolute; width:var(--s); height:var(--s);
-         filter:drop-shadow(0 16px 22px rgba(20,40,70,.26))}
-  .float img{width:100%; height:100%; object-fit:contain; display:block;
-             pointer-events:none; -webkit-user-drag:none; user-select:none; -webkit-touch-callout:none}
-  /* Desktop scatter positions — off inline styles so the phone query can win. */
-  #f1{--s:92px;  left:55.6%; top:12.4%}  #f2{--s:114px; left:74.8%; top:10.5%}
-  #f3{--s:88px;  left:90.9%; top:22.6%}  #f4{--s:106px; left:61.4%; top:28.1%}
-  #f5{--s:124px; left:79.2%; top:29.1%}  #f6{--s:94px;  left:53.9%; top:45.3%}
-  #f7{--s:84px;  left:69.3%; top:50.1%}  #f8{--s:100px; left:88.7%; top:48.4%}
-  #f10{--s:118px; left:56.6%; top:64.5%} #f13{--s:102px; left:79.4%; top:65.1%}
-  @keyframes bobA{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(-2deg)}}
-  @keyframes bobB{0%,100%{transform:translateY(0) rotate(7deg)}50%{transform:translateY(-24px) rotate(2deg)}}
-  @keyframes bobC{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-13px) rotate(4deg)}}
-  .bobA{animation:bobA 8s ease-in-out infinite}
-  .bobB{animation:bobB 8.4s ease-in-out infinite}
-  .bobC{animation:bobC 7.6s ease-in-out infinite}
+  /* The sky is real footage; the gradient above is its poster AND its fallback,
+     so a blocked or still-loading video leaves the same composition behind. */
+  .herovid{position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+           z-index:0; pointer-events:none}
+  .wash{position:absolute; inset:0; z-index:1; pointer-events:none;
+        background:linear-gradient(178deg,rgba(76,134,198,.62) 0%,rgba(76,134,198,.5) 34%,
+                  rgba(141,184,228,.42) 70%,rgba(207,224,241,.5) 100%)}
 
-  /* ── Nav ──────────────────────────────────────────────────────────── */
-  .nav{position:relative; z-index:3; display:flex; align-items:center; justify-content:space-between; padding:26px 44px}
-  .brand{display:flex; align-items:center; gap:8px; color:var(--cream)}
-  .brand span{font-family:var(--font-primary); font-size:13px; font-weight:800; letter-spacing:-.01em; line-height:.9}
+  .cloud{position:absolute; border-radius:50%; z-index:2; pointer-events:none}
+  .c1{left:-60px; top:120px; width:460px; height:240px; background:rgba(255,255,255,.22); filter:blur(38px)}
+  .c2{right:-80px; top:300px; width:560px; height:300px; background:rgba(255,255,255,.2);  filter:blur(46px)}
+  .c3{left:18%; bottom:20px; width:62%; height:320px; background:rgba(255,255,255,.28); filter:blur(56px)}
+
+  /* Everything readable rides above the weather. */
+  .frame{position:relative; z-index:7; flex:1; display:flex; flex-direction:column;
+         width:100%; max-width:1440px; margin:0 auto}
+
+  .nav{display:flex; align-items:center; justify-content:space-between; padding:26px 44px}
+  .brand{display:flex; align-items:center; gap:13px; color:var(--cream)}
+  .brand span{font-family:var(--font-primary); font-size:14px; font-weight:800;
+              letter-spacing:-.01em; line-height:.9}
   .nav-links{display:flex; align-items:center; gap:34px}
-  /* Nav text — including the CTA's label — is secondary (system) font; only the
-     wordmark and the hero H1 are the primary (Bricolage) display face. */
-  .nav-link{font-family:var(--font-secondary); font-size:15px; font-weight:500; color:rgba(244,236,216,.9);
-            transition:color .16s ease}
+  .nav-link{font-family:var(--font-secondary); font-size:15px; font-weight:500;
+            color:rgba(244,236,216,.9); transition:color .16s ease}
   .nav-link:hover{color:var(--cream)}
-  .nav-cta{display:inline-flex; align-items:center; font-family:var(--font-secondary); font-size:15px; font-weight:700;
-           color:var(--cta-text); background:var(--cta); padding:13px 24px; border-radius:999px;
-           transition:background .16s ease, transform .16s ease}
-  .nav-cta:hover{background:var(--cta-hover); transform:translateY(-1px)}
-  .nav-cta:active{transform:translateY(0)}
+  .nav-cta{font-family:var(--font-secondary); font-size:15px; font-weight:700;
+           color:var(--cream); transition:opacity .16s ease}
+  .nav-cta:hover{opacity:.82}
 
-  /* ── Hero content ─────────────────────────────────────────────────── */
-  .content{position:relative; z-index:3; padding:66px 72px 0; max-width:820px}
-  /* The form block — its own element (not inside .content) so the phone band
-     can slot between the caption and it. On desktop it sits under the copy. */
-  .signup{position:relative; z-index:3; max-width:560px; padding:0 72px 40px}
-  .kicker{display:inline-block; transform:rotate(-4deg); background:var(--terra); color:var(--cream);
-          font-size:11px; font-weight:800; letter-spacing:.14em; padding:7px 12px; border-radius:8px}
-  h1{margin:26px 0 0; font-family:var(--font-primary); font-size:clamp(52px,13vw,150px); font-weight:800;
-     line-height:.8; letter-spacing:-.05em; color:var(--cream)}
-  .h1-mob{display:none}
-  .squiggle{display:block; margin-top:12px; width:min(420px,64%); height:auto}
-  /* Heavier + a soft shadow so the caption stays legible over the cloud blobs. */
-  .caption{font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
-           font-size:clamp(17px,2vw,26px); line-height:1.4; font-weight:600; color:#F7F1DF;
-           text-shadow:0 1px 14px rgba(20,40,70,.45), 0 1px 3px rgba(20,40,70,.3);
-           margin-top:28px; max-width:560px}
+  /* The board pins the copy with a top padding rather than centring it, which
+     lands the block a touch ABOVE the middle. Reproduced as centring plus a
+     bottom bias so it holds that proportion at any viewport height, not just
+     at the mock's fixed one. */
+  .content{flex:1; display:flex; flex-direction:column; align-items:center;
+           justify-content:center; text-align:center; padding:0 72px 8vh}
+  h1{margin:0; font-family:var(--font-primary); font-size:clamp(44px,5vw,72px);
+     font-weight:800; line-height:.88; letter-spacing:-.045em; color:var(--cream)}
+  .squiggle{display:block; margin-top:14px; width:220px; height:auto}
 
-  /* ── App Store button (board: the v2 hero CTA) ─────────────────────────
-     Hand-drawn rather than Apple's supplied badge, per the design. The small
-     line is secondary (system) and the name is primary — the board's own split,
-     and the same rule the nav follows. */
-  .appstore{display:inline-flex; align-items:center; gap:9px; margin-top:36px;
+  .appstore{display:inline-flex; align-items:center; gap:9px; margin-top:46px;
             min-height:52px; padding:12px 24px; border-radius:14px;
             background:var(--cta); color:var(--cta-text);
             transition:background .16s ease, transform .16s ease}
@@ -138,189 +95,66 @@
           letter-spacing:.12em; opacity:.68}
   .as-name{font-family:var(--font-primary); font-size:17px; font-weight:800; letter-spacing:-.02em}
 
-  /* ── Shared section frame ─────────────────────────────────────────── */
-  .section-frame{width:100%; max-width:1440px; margin:0 auto; padding:96px 72px 104px}
-  /* Labels/headlines are the primary (Bricolage) face; running copy is
-     secondary (system) — same split as the hero. */
-  .eyebrow{font-family:var(--font-secondary); font-size:13px; font-weight:700;
-           letter-spacing:.16em; color:#9A968B}
-  .eyebrow--on-dark{color:rgba(244,236,216,.75)}
-  .squiggle-sm{display:block; margin-top:14px; stroke:var(--gold)}
-
-  /* ── How it works ─────────────────────────────────────────────────── */
-  .how{background:var(--paper); color:var(--ink)}
-  .how-head{display:flex; align-items:flex-end; justify-content:space-between; gap:40px; flex-wrap:wrap}
-  .how-title{font-family:var(--font-primary); font-size:clamp(36px,4.4vw,64px); font-weight:800;
-             letter-spacing:-.04em; line-height:.96; margin:12px 0 0}
-  .how-sub{font-family:var(--font-secondary); font-size:17px; line-height:1.6;
-           color:rgba(30,42,36,.62); max-width:340px; margin:0}
-  .how-cards{display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:60px}
-  .how-card{border-radius:26px; padding:32px 30px 36px; color:var(--cream)}
-  .how-card--plum{background:var(--plum); transform:rotate(-1.2deg)}
-  .how-card--terra{background:var(--terra); transform:rotate(1deg); margin-top:18px}
-  .how-card--lavender{background:var(--lavender); color:var(--ink); transform:rotate(-.8deg)}
-  .how-time{display:inline-block; transform:rotate(-5deg); background:var(--gold); color:var(--ink);
-            font-family:var(--font-secondary); font-size:11px; font-weight:800; letter-spacing:.14em;
-            padding:7px 13px; border-radius:8px}
-  .how-time--light{transform:rotate(4deg); background:var(--cream); color:var(--terra)}
-  .how-time--dark{transform:rotate(-4deg); background:var(--plum); color:var(--cream)}
-  .how-card h3{font-family:var(--font-primary); font-size:clamp(24px,2.2vw,30px); font-weight:800;
-               letter-spacing:-.03em; line-height:1; margin:22px 0 0}
-  .how-card p{font-family:var(--font-secondary); font-size:15px; line-height:1.55; margin:14px 0 0;
-             color:rgba(244,236,216,.85)}
-  .how-card--lavender p{color:rgba(30,42,36,.72)}
-
-  /* ── FAQ ───────────────────────────────────────────────────────────── */
-  .faq{background:var(--paper); color:var(--ink); border-top:1px solid var(--muted-line)}
-  .faq-frame{max-width:880px; padding-left:72px; padding-right:72px}
-  .faq-title{font-family:var(--font-primary); font-size:clamp(36px,4.4vw,64px); font-weight:800;
-             letter-spacing:-.04em; line-height:1; margin:12px 0 0}
-  .faq-list{margin-top:46px}
-  .faq-item{border-top:1px solid var(--muted-line); padding:26px 0}
-  .faq-item:last-child{border-bottom:1px solid var(--muted-line)}
-  .faq-q{font-family:var(--font-primary); font-size:21px; font-weight:700; letter-spacing:-.02em}
-  .faq-a{font-family:var(--font-secondary); font-size:15px; line-height:1.6;
-         color:rgba(30,42,36,.62); margin-top:10px}
-
-  /* -- Footer -- deliberately just the two legal links. The hero-only version
-        of this page had no footer at all ("we dont need that"); now that the app
-        is listed, /privacy and /terms have to be reachable from somewhere. */
-  .foot{background:var(--plum); color:rgba(244,236,216,.75); padding:30px 72px;
-        font-family:var(--font-secondary); font-size:13px;
-        display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap}
-  .foot a{color:rgba(244,236,216,.75); text-decoration:underline}
-  .foot a:hover{color:var(--cream)}
-
-  /* ── Tablet ───────────────────────────────────────────────────────── */
-  @media (max-width:1024px){
-    .float{width:calc(var(--s)*.66); height:calc(var(--s)*.66)}
-    .content{padding:60px 48px 40px}
-    #f7{display:none}
-  }
-
-  /* ── Short laptops: shrink so it still fits one screen (no scroll) ──── */
-  @media (min-width:641px) and (max-height:820px){
-    .content{padding-top:40px; padding-bottom:24px}
-    h1{font-size:clamp(44px,8vw,104px)}
-    .caption{margin-top:18px; font-size:clamp(16px,1.6vw,21px)}
-    form{margin-top:24px}
-  }
-
-  /* ── Phone (board: Landing Page REAL v2 Mobile) — video sky, everything
-        CENTRED, and the emoji cluster dropped entirely. The old phone layout
-        was a left-aligned stack with an emoji band between caption and form;
-        the board's phone cut is quieter than that, so the motion behind the
-        type carries the energy the emoji used to. ── */
+  /* ── Phone (board: Landing Page REAL v2 Mobile) ── two clouds instead of
+        three, brand + "Get the app" only, and a tighter button. ── */
   @media (max-width:640px){
-    html,body{height:auto; overflow-x:hidden}
-    .hero{height:auto; min-height:100svh; justify-content:flex-start}
-    .herovid,.vidwash{display:block}
-    /* The blurred blobs fight the video's own clouds — the wash above is the
-       only atmosphere the phone hero needs. */
-    .cloud{display:none}
-    /* No emoji on the phone cut at all (board). */
-    .floatband{display:none}
-
     .nav{padding:20px 20px 0}
+    .brand{gap:10px}
+    .brand span{font-size:11px}
     .nav-link{display:none}
-    /* Phone CTA is the board's plain cream text link, not the gold desktop pill —
-       the gold belongs to the one real button down in the form. */
-    .nav-cta{background:none; color:var(--cream); font-size:13px; font-weight:700; padding:0}
-    .nav-cta:hover{background:none; color:#FFFFFF; transform:none}
+    .nav-cta{font-size:13px}
 
-    /* The auto margins centre the wordmark+form group in whatever space the nav
-       leaves, instead of pinning it to the top and dumping the slack at the
-       bottom — the board's phone hero is a fixed 780 where that balance is
-       implicit; here the hero is 100svh and has to find it. */
-    .content{padding:0 20px; max-width:none; margin-top:auto;
-             display:flex; flex-direction:column; align-items:center; text-align:center}
-    /* The board's phone wordmark is its own string — lowercase, full stop. */
-    .h1-desk{display:none}
-    .h1-mob{display:block}
-    h1{margin:0; font-size:clamp(44px,13.5vw,52px); line-height:.88; letter-spacing:-.045em}
-    .kicker{display:none}
+    .c1{left:-70px; top:130px; width:300px; height:180px; background:rgba(255,255,255,.2); filter:blur(34px)}
+    .c2{right:-80px; top:auto; bottom:90px; width:340px; height:220px; background:rgba(255,255,255,.24); filter:blur(44px)}
+    .c3{display:none}
+
+    .content{padding:0 20px 10vh}
+    h1{font-size:clamp(40px,13.3vw,52px)}
     .squiggle{width:160px; margin-top:12px; stroke-width:11}
-    /* Kept against the board (which has none): pre-launch, the form is asking
-       for an email, and it has to say what you're signing up for. */
-    .caption{margin-top:20px; font-size:16px; line-height:1.45; max-width:330px}
-
-    .signup{max-width:none; padding:0 20px 30px; margin:0 auto auto; width:100%;
-            display:flex; justify-content:center}
-    /* Board's phone CTA: 46 min-height, tighter than the desktop pill. */
     .appstore{margin-top:36px; min-height:46px; padding:12px 22px}
     .appstore svg{width:18px; height:18px}
     .as-pre{font-size:8px}
     .as-name{font-size:14px}
+  }
 
-    .section-frame{padding:56px 24px 64px}
-    .faq-frame{padding-left:24px; padding-right:24px}
-    .how-head{flex-direction:column; align-items:flex-start; gap:16px}
-    .how-sub{max-width:none}
-    .how-cards{grid-template-columns:1fr; gap:16px; margin-top:36px}
-    .how-card--terra,.how-card--lavender{margin-top:0}
-    .how-card{transform:none !important}
-    .faq-q{font-size:18px}
-    .foot{padding:24px; justify-content:center; text-align:center}
+  /* Short laptops: keep the whole composition on the one screen it has. */
+  @media (min-width:641px) and (max-height:720px){
+    h1{font-size:clamp(38px,4vw,56px)}
+    .appstore{margin-top:30px}
+    .content{padding-bottom:4vh}
+  }
+
+  /* No motion for anyone who asked not to have it — the sky stays a gradient. */
+  @media (prefers-reduced-motion: reduce){
+    .herovid{display:none}
   }
 </style>
 </head>
 <body>
 
-<div class="page">
-  <section class="hero">
-    <!-- Phone-only motion behind the sky (board: Landing Page REAL v2 Mobile).
-         The src is attached by JS on phones only, so desktop never pays the
-         2MB download for something it doesn't show. The gradient below is the
-         poster/fallback — if the video never loads, the sky is still the sky. -->
-    <video class="herovid" id="heroVid" muted loop playsinline preload="none" aria-hidden="true"></video>
-    <div class="vidwash"></div>
+<section class="hero">
+  <video class="herovid" id="heroVid" muted loop playsinline preload="auto" aria-hidden="true"></video>
+  <div class="wash"></div>
 
-    <div class="cloud c1"></div>
-    <div class="cloud c2"></div>
-    <div class="cloud c3"></div>
+  <div class="cloud c1"></div>
+  <div class="cloud c2"></div>
+  <div class="cloud c3"></div>
 
-    <div class="frame">
-    <!-- Nav -->
+  <div class="frame">
     <div class="nav">
-      <div class="brand">
-        <svg width="34" height="34" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
+      <a class="brand" href="/">
+        <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
         <span>WIN<br>YOUR<br>MORNING</span>
-      </div>
+      </a>
       <div class="nav-links">
-        <a href="#how" class="nav-link">How it works</a>
-        <a href="#faq" class="nav-link">FAQ</a>
-        <a href="#get" class="nav-cta">Get the app</a>
+        <a class="nav-cta" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
       </div>
     </div>
 
-    <!-- Content -->
     <div class="content">
-      <span class="kicker">RISE OR BE ROASTED</span>
-      <!-- Two cuts of the wordmark: the desktop lockup, and the board's phone
-           treatment (lowercase, full stop, centred). One is hidden per breakpoint
-           rather than restyled, because the strings themselves differ. -->
-      <h1 class="h1-desk">Win your<br>morning</h1>
-      <h1 class="h1-mob">win your<br>morning.</h1>
-      <svg class="squiggle" width="420" height="24" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="7" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
-      <p class="caption">Your friends are the alarm clock. Make your promises the night before, prove it with a photo by the deadline, or wake up as Bum of the Day.</p>
-    </div>
+      <h1>win your<br>morning.</h1>
+      <svg class="squiggle" width="420" height="24" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
 
-    <!-- Emoji — a scattered cluster on desktop, a neat band between the caption
-         and the form on phones (board: mobile). Decorative only. -->
-    <div class="floatband">
-      <div class="float bobA" id="f1"  data-float="obj1"><img src="assets/emoji-obj1.png"  alt=""></div>
-      <div class="float bobC" id="f2"  data-float="obj2"><img src="assets/emoji-obj2.png"  alt=""></div>
-      <div class="float bobB" id="f3"  data-float="obj3"><img src="assets/emoji-obj3.png"  alt=""></div>
-      <div class="float bobB" id="f4"  data-float="obj4"><img src="assets/emoji-obj4.png"  alt=""></div>
-      <div class="float bobA" id="f5"  data-float="obj5"><img src="assets/emoji-obj5.png"  alt=""></div>
-      <div class="float bobC" id="f6"  data-float="obj6"><img src="assets/emoji-obj6.png"  alt=""></div>
-      <div class="float bobC" id="f7"  data-float="obj7"><img src="assets/emoji-obj7.png"  alt=""></div>
-      <div class="float bobA" id="f8"  data-float="obj8"><img src="assets/emoji-obj8.png"  alt=""></div>
-      <div class="float bobB" id="f10" data-float="obj10"><img src="assets/emoji-obj10.png" alt=""></div>
-      <div class="float bobC" id="f13" data-float="obj13"><img src="assets/emoji-obj13.png" alt=""></div>
-    </div>
-
-    <div class="signup" id="get">
       <a class="appstore" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01ZM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25Z"></path></svg>
         <span class="as-stack">
@@ -329,110 +163,28 @@
         </span>
       </a>
     </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section class="how" id="how">
-    <div class="section-frame">
-      <div class="how-head">
-        <div>
-          <div class="eyebrow">HOW IT WORKS</div>
-          <h2 class="how-title">Here's the whole game.</h2>
-          <svg class="squiggle-sm" width="260" height="18" viewBox="0 0 260 18" fill="none" stroke-width="5" stroke-linecap="round" aria-hidden="true"><path d="M4 11 Q 26 4 48 10 T 92 10 T 136 10 T 180 10 T 224 10 T 256 8"></path></svg>
-        </div>
-        <p class="how-sub">Three moves, every weekend. No coaching, no streak guilt — just your friends watching.</p>
-      </div>
-
-      <div class="how-cards">
-        <div class="how-card how-card--plum">
-          <span class="how-time">9:30 PM</span>
-          <h3>Promise at night</h3>
-          <p>Set your wake time and up to four promises. Then actually go to bed.</p>
-        </div>
-        <div class="how-card how-card--terra">
-          <span class="how-time how-time--light">6:00 AM</span>
-          <h3>Prove it by noon</h3>
-          <p>Photos captured in-app and timestamped. No gallery, no faking it.</p>
-        </div>
-        <div class="how-card how-card--lavender">
-          <span class="how-time how-time--dark">12:00 PM</span>
-          <h3>Win or get roasted</h3>
-          <p>Streaks stack, the board updates, and the bum of the day gets named.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section class="faq" id="faq">
-    <div class="section-frame faq-frame">
-      <div class="eyebrow">FAQ</div>
-      <h2 class="faq-title">Questions.</h2>
-      <div class="faq-list">
-        <div class="faq-item">
-          <div class="faq-q">What happens if I miss my window?</div>
-          <div class="faq-a">Your streak resets, your squad gets notified, and you're a candidate for Bum of the Day. That's the whole point.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Can I upload an old photo?</div>
-          <div class="faq-a">No. Check-in photos are captured in-app and timestamped. No gallery, no filters, no faking it.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">How big can a squad be?</div>
-          <div class="faq-a">Three to eight people. Small enough that everyone notices when you don't show up.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">What if my mornings start at 4 AM, or 11?</div>
-          <div class="faq-a">You set your own wake window. The app only cares that you keep the promise you made.</div>
-        </div>
-        <div class="faq-item">
-          <div class="faq-q">Is my data private?</div>
-          <div class="faq-a">Photos are only visible to your squad and auto-delete after 30 days. We never sell your data.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="foot">
-    <span>&copy; 2026 Win Your Morning</span>
-    <span><a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a></span>
-  </footer>
-</div>
+  </div>
+</section>
 
 <script>
-/* ── Phone hero video ─────────────────────────────────────────────────────
-   Attached here rather than in the markup so the 2MB file is requested ONLY
-   on the breakpoint that shows it — a `display:none` <video src> still
-   downloads. Autoplay needs muted+playsinline (both set on the element);
-   if play() is refused we simply leave the gradient sky showing.
-   Respects prefers-reduced-motion: no video at all for those readers. */
+/* ── Hero video ───────────────────────────────────────────────────────────
+   The src is attached here rather than in the markup so `prefers-reduced-motion`
+   skips the DOWNLOAD outright, not just the playback. Autoplay needs muted +
+   playsinline (both on the element); if play() is refused we leave the gradient
+   sky showing, which is the same picture without the motion. */
 (function () {
   var v = document.getElementById('heroVid');
-  if (!v || !window.matchMedia) return;
-  var phone = window.matchMedia('(max-width:640px)');
-  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var loaded = false;
-  function arm() {
-    if (loaded || !phone.matches || still.matches) return;
-    loaded = true;
-    v.src = 'assets/hero.mp4';
-    var go = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
-    go();
-    v.addEventListener('canplay', go, { once: true });
-  }
-  arm();
-  // Re-check on rotate/resize: a landscape phone or a narrowed window can cross
-  // the breakpoint after load, and the video should follow the layout.
-  if (phone.addEventListener) phone.addEventListener('change', arm);
+  if (!v) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  v.src = 'assets/hero.mp4';
+  var go = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+  go();
+  v.addEventListener('canplay', go, { once: true });
 })();
 
 /* ── Page-view ping ───────────────────────────────────────────────────────
-   The waitlist FORM is gone (the app shipped — the hero CTA is the App Store
-   now), but this GET is also what writes `page_views` on the backend, and the
-   ?src= channel tag rides on it. So the request stays, fire-and-forget: no UI
-   depends on the response any more. The waitlist table/function are untouched
-   and still hold every signup from the pre-launch run. */
+   This GET is what writes `page_views` on the backend, and the ?src= channel tag
+   rides on it. Fire-and-forget: no UI depends on the response. */
 (function () {
   var API = 'https://bdwaqpnycvywhhuzhlga.supabase.co/functions/v1/waitlist';
   var src = new URLSearchParams(location.search).get('src');
