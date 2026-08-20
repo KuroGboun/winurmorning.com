@@ -11,9 +11,9 @@
   (Associated Domains intercepts the tap before Safari opens). This only
   renders when the app is NOT installed, which is the whole point.
 
-  TO SWITCH TO THE APP STORE ONCE THE APP IS LIVE: change DESTINATION_URL
-  below to the App Store product page. Nothing else on this file needs to
-  change — no app rebuild, no new AASA entry, no DNS.
+  Switched to the App Store product page 2026-08-20, the day the app went
+  live. Nothing else on this file needed to change — no app rebuild, no new
+  AASA entry, no DNS.
 -->
 <style>
   html,body{height:100%;margin:0}
@@ -38,11 +38,10 @@
 <main>
   <h1>You've been invited to Win Your Morning 🌅</h1>
   <p id="codeLine">Someone wants you in their squad.</p>
-  <a class="cta" id="ctaLink" href="/win-your-morning/">Get on the list</a>
+  <a class="cta" id="ctaLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
 </main>
 <script>
-  // DESTINATION_URL is the one line that changes at App Store launch.
-  var DESTINATION_URL = "/win-your-morning/";
+  var DESTINATION_URL = "https://apps.apple.com/ca/app/win-your-morning/id6791211875";
 
   // The invite code is still sitting in the URL Safari tried to load
   // (/join/ABC123) even though nothing lives at that path — no server, just
