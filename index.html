@@ -230,9 +230,13 @@
    Since (b) reports itself as healthy, we cannot detect it by asking the
    element how it is doing. So the return handler tries the cheap fix and then
    VERIFIES it: if the clock has not moved a beat later, the node is wedged and
-   we rebuild it. The clip is a 5s ambient loop, so restarting is invisible. */
+   we rebuild it. The clip is an ambient sky loop with no beat to lose, so
+   restarting it from the top costs nothing a viewer would notice. */
 (function () {
-  var HERO_SRC = 'assets/hero.mp4';
+  // ?v= is the CACHE-BUSTER, not decoration: the file name never changes, so
+  // without it everyone who has already loaded the page keeps the old clip out
+  // of their browser cache. Bump it whenever assets/hero.mp4 is replaced.
+  var HERO_SRC = 'assets/hero.mp4?v=2';
   var v = document.getElementById('heroVid');
   if (!v) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
