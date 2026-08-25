@@ -7,13 +7,21 @@
 <!--
   GitHub Pages serves THIS file for any unmatched path — which is what makes
   it the Universal Link fallback for /join/<code>. Nothing hosts a real page
-  per invite code; iOS never even requests one when the app is installed
-  (Associated Domains intercepts the tap before Safari opens). This only
-  renders when the app is NOT installed, which is the whole point.
+  per invite code; iOS never even requests one when the app is installed AND
+  that install's entitlements associate this domain (Associated Domains
+  intercepts the tap before Safari opens).
+
+  2026-08-24: builds in the wild only associate kurogboun.github.io, so a
+  /join link on THIS domain lands here even with the app installed. For that
+  case the page now bounces into the app via the custom scheme
+  (winyourmorning://join/<code>), which every shipped build — RN era included
+  — has always registered. Auto-attempted once on iPhone/iPad, and offered as
+  the primary button; the App Store link stays as the no-app fallback. Once
+  installs broadly carry the winurmorning.com entitlement this page goes back
+  to being the not-installed page only, and none of this hurts.
 
   Switched to the App Store product page 2026-08-20, the day the app went
-  live. Nothing else on this file needed to change — no app rebuild, no new
-  AASA entry, no DNS.
+  live. No app rebuild, no new AASA entry, no DNS for any of this.
 -->
 <style>
   html,body{height:100%;margin:0}
@@ -31,6 +39,12 @@
     font-weight:600;text-decoration:none;
     padding:12px 28px;border-radius:999px;font-size:15px;
   }
+  a.cta.secondary{
+    background:transparent;color:#F4ECD8;
+    border:1.5px solid rgba(244,236,216,.55);
+    margin-top:10px;
+  }
+  .stack{display:flex;flex-direction:column;align-items:center}
   code{background:rgba(244,236,216,.15);padding:2px 6px;border-radius:6px}
 </style>
 </head>
@@ -38,20 +52,41 @@
 <main>
   <h1>You've been invited to Win Your Morning 🌅</h1>
   <p id="codeLine">Someone wants you in their squad.</p>
-  <a class="cta" id="ctaLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
+  <div class="stack">
+    <a class="cta" id="openLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875" hidden>Open in the app</a>
+    <a class="cta" id="ctaLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
+  </div>
 </main>
 <script>
-  var DESTINATION_URL = "https://apps.apple.com/ca/app/win-your-morning/id6791211875";
+  var STORE_URL = "https://apps.apple.com/ca/app/win-your-morning/id6791211875";
 
   // The invite code is still sitting in the URL Safari tried to load
   // (/join/ABC123) even though nothing lives at that path — no server, just
-  // reading it back out client-side for a slightly less generic line.
+  // reading it back out client-side.
   var m = location.pathname.match(/\/join\/([^\/]+)/);
-  if (m && m[1]) {
+  var code = m && m[1] ? decodeURIComponent(m[1]) : null;
+  var onIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+  if (code) {
     document.getElementById('codeLine').textContent =
-      "Someone wants you in their squad. Once you have the app, enter code " + m[1] + " to join.";
+      "Someone wants you in their squad. Once you have the app, enter code " + code + " to join.";
+
+    // The scheme door, for the installed-but-lands-here case. Kept as a real
+    // link (not only the auto-attempt below): if the attempt's moment passes,
+    // the button is still there.
+    var appUrl = "winyourmorning://join/" + encodeURIComponent(code);
+    var open = document.getElementById('openLink');
+    open.href = appUrl;
+    open.hidden = false;
+    document.getElementById('ctaLink').className = 'cta secondary';
+
+    // One auto-attempt, iPhone/iPad only. App installed → iOS asks to open
+    // it and the join screen comes up with the code. Not installed → Safari
+    // shows a one-line "address is invalid" alert and this page, with the
+    // store button, is still standing right behind it.
+    if (onIOS) { setTimeout(function () { location.href = appUrl; }, 60); }
   }
-  document.getElementById('ctaLink').href = DESTINATION_URL;
+  document.getElementById('ctaLink').href = STORE_URL;
 </script>
 </body>
 </html>
