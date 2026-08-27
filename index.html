@@ -64,8 +64,14 @@
   .hero{position:fixed; inset:0; overflow:hidden; display:flex; flex-direction:column;
         background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 30%,#8DB8E4 68%,#CFE0F1 100%)}
 
-  /* The sky is real footage; the gradient above is its poster AND its fallback,
-     so a blocked or still-loading video leaves the same composition behind. */
+  /* The sky is real footage, with its OWN frame 0 (assets/hero-poster.jpg,
+     ~47KB, at the clip's native 960×540 so the pixels match) laid under it. A
+     slow connection sees that still on first paint — it used to be blank until
+     the clip buffered, which read as the page starting on a flat blue screen —
+     and the footage then takes over from the identical frame, so the handoff
+     is invisible. The gradient above is the fallback under THAT: if even the
+     still isn't in yet. If hero.mp4 is ever replaced, regrab the still from the
+     new clip's frame 0 and bump BOTH ?v= tags, or the two skies won't match. */
   /* Sized to COVER without relying on object-fit. Safari letterboxes a video
      laid out with inset:0 + object-fit:cover — a 16:9 clip in a portrait
      viewport got centred with the blue gradient banding above and below it,
@@ -74,10 +80,19 @@
      always honoured: the clip grows until it overflows BOTH axes and the
      centring transform crops the excess evenly. scale() then pushes in a little
      further, so no subpixel sliver of gradient can ever reach an edge. */
-  .herovid{position:absolute; top:50%; left:50%;
+  .heroposter,.herovid{position:absolute; top:50%; left:50%;
            min-width:100%; min-height:100%; width:auto; height:auto;
            transform:translate(-50%,-50%) scale(1.06);
            z-index:0; pointer-events:none}
+  /* Still and footage share frame 0, so the crossfade is belt-and-braces —
+     it covers decoder/colour-management drift between a JPEG and a decoded
+     H.264 frame, which can differ by a shade. The video starts invisible on
+     top of the still and dissolves in only once it is genuinely painting
+     frames (`is-live`, set from the script below) — never on `canplay`, which
+     can fire a beat before the first frame is on screen and would fade in
+     black. */
+  .herovid{opacity:0; transition:opacity .1s ease}
+  .herovid.is-live{opacity:1}
   .wash{position:absolute; inset:0; z-index:1; pointer-events:none;
         background:linear-gradient(178deg,rgba(76,134,198,.62) 0%,rgba(76,134,198,.5) 34%,
                   rgba(141,184,228,.42) 70%,rgba(207,224,241,.5) 100%)}
@@ -139,17 +154,26 @@
      radius, and the taller 24x28 Apple mark rather than the squarer 24x24 one
      — it reads far closer to Apple's real badge than the letterspaced
      all-caps version this replaced. Both lines are the display face now. */
-  .appstore{display:inline-flex; align-items:center; gap:8px; margin-top:28px;
+  .appstore{display:inline-flex; align-items:center; gap:6px; margin-top:28px;
             padding:8px 16px; border-radius:11px;
             background:var(--cta); color:var(--cta-text);
             transition:background .16s ease, transform .16s ease}
   .appstore:hover{background:var(--cta-hover); transform:translateY(-1px)}
   .appstore:active{transform:translateY(0)}
-  .appstore svg{width:17px; height:21px; flex:none}
+  /* The mark is Apple's real logo geometry (the Simple Icons path), not a
+     hand-trace — the previous one had the leaf floating clear of the body.
+     Proportions are lifted off Apple's official 120×40 badge: there the logo
+     is ~21.7px tall against a 16.5px "App Store" (≈1.3×) with a tight ~3px
+     gap to the text. The ratio math said 20px over 16px, but on this gold
+     ground, in this face, it still read too big — 17px is where Kuro called it
+     right (2026-08-27, after 22 and 20 both came back "too big"). Trust the
+     eye over the ratio. A hair of optical lift keeps it on the baseline of
+     "App Store" rather than sinking under it. */
+  .appstore svg{width:17px; height:17px; flex:none; margin-top:-1px}
   .as-stack{display:flex; flex-direction:column; line-height:1; text-align:left}
-  .as-pre{font-family:var(--font-primary); font-size:8px; font-weight:600;
+  .as-pre{font-family:var(--font-primary); font-size:7.5px; font-weight:600;
           letter-spacing:-.005em}
-  .as-name{font-family:var(--font-primary); font-size:15px; font-weight:700;
+  .as-name{font-family:var(--font-primary); font-size:14.5px; font-weight:700;
            letter-spacing:-.015em; margin-top:2px}
 
   /* ── Phone (board: Landing Page REAL v2 Mobile) ── two clouds instead of
@@ -174,7 +198,7 @@
        geometry comes to ~41px tall, under the 44px floor — so the phone keeps
        its type and radius and only buys back the height. */
     .appstore{margin-top:30px; min-height:46px; padding:11px 20px}
-    .appstore svg{width:16px; height:20px}
+    .appstore svg{width:16px; height:16px}
     .as-name{font-size:14px}
   }
 
@@ -195,6 +219,7 @@
 <body>
 
 <section class="hero">
+  <img class="heroposter" src="assets/hero-poster.jpg?v=2" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
   <video class="herovid" id="heroVid" muted loop autoplay playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
   <div class="wash"></div>
 
@@ -220,7 +245,7 @@
       <p class="tagline">wake up with your friends.</p>
 
       <a class="appstore" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">
-        <svg viewBox="0 0 24 28" fill="currentColor" aria-hidden="true"><path d="M17.05 14.86c.02 2.62 2.3 3.49 2.33 3.5-.02.06-.37 1.26-1.21 2.5-.73 1.07-1.49 2.13-2.69 2.15-1.17.02-1.55-.69-2.89-.69-1.34 0-1.76.67-2.87.71-1.15.04-2.03-1.15-2.77-2.21-1.61-2.33-2.84-6.58-1.19-9.45.82-1.43 2.28-2.33 3.87-2.35 1.13-.02 2.2.76 2.89.76.69 0 1.99-.94 3.36-.8.57.02 2.17.21 3.2 1.72-.08.05-1.91 1.12-1.9 3.34M14.9 5.36c.61-.74 1.02-1.77.91-2.79-.88.04-1.94.59-2.57 1.32-.56.65-1.05 1.7-.92 2.7.98.08 1.97-.5 2.58-1.23"></path></svg>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
         <span class="as-stack">
           <span class="as-pre">Download on the</span>
           <span class="as-name">App Store</span>
@@ -272,9 +297,24 @@
     }
   }
 
+  // Reveal only when a frame has actually been composited: rVFC where it
+  // exists (Safari 15.4+, Chrome), else the first timeupdate after playing —
+  // both prove pixels, where `playing` alone only promises them.
+  function reveal() {
+    if (v.classList.contains('is-live')) return;
+    if (v.requestVideoFrameCallback) {
+      v.requestVideoFrameCallback(function () { v.classList.add('is-live'); });
+    } else {
+      v.addEventListener('timeupdate', function tick() {
+        if (v.currentTime > 0) { v.classList.add('is-live'); v.removeEventListener('timeupdate', tick); }
+      });
+    }
+  }
+
   function wire() {
     v.addEventListener('canplay', play);
     v.addEventListener('loadeddata', play);
+    v.addEventListener('playing', reveal);
     // Catch-all for case (a): rather than enumerating every way iOS can stop
     // playback, notice the paused state itself and undo it.
     v.addEventListener('pause', function () {
