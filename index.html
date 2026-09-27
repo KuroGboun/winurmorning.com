@@ -210,6 +210,15 @@
     .content{padding-bottom:4vh}
   }
 
+  /* Legal footer: pinned to the bottom of the sky, under the App Store badge,
+     quiet enough not to compete with it. Same links the app itself opens. */
+  .legal{position:absolute; left:0; right:0; bottom:0; z-index:7; display:flex;
+         justify-content:center; gap:22px;
+         padding:0 20px calc(18px + env(safe-area-inset-bottom))}
+  .legal a{font-family:var(--font-secondary); font-size:13px; font-weight:500;
+           color:rgba(244,236,216,.72); transition:color .16s ease}
+  .legal a:hover{color:var(--cream)}
+
   /* No motion for anyone who asked not to have it — the sky stays a gradient. */
   @media (prefers-reduced-motion: reduce){
     .herovid{display:none}
@@ -253,6 +262,11 @@
       </a>
     </div>
   </div>
+
+  <nav class="legal" aria-label="Legal">
+    <a href="/privacy">Privacy</a>
+    <a href="/terms">Terms</a>
+  </nav>
 </section>
 
 <script>
