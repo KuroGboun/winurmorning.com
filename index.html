@@ -130,6 +130,8 @@
   .nav-link{font-family:var(--font-secondary); font-size:15px; font-weight:500;
             color:rgba(244,236,216,.9); transition:color .16s ease}
   .nav-link:hover{color:var(--cream)}
+  /* Privacy · Terms read as one pair: tight to each other, normal gap to the CTA. */
+  .nav-link + .nav-link{margin-left:-18px}
   .nav-cta{font-family:var(--font-secondary); font-size:15px; font-weight:700;
            color:var(--cream); transition:opacity .16s ease}
   .nav-cta:hover{opacity:.82}
@@ -184,6 +186,7 @@
     .brand{gap:10px}
     .brand span{font-size:11px}
     .nav-links{gap:16px}
+    .nav-link + .nav-link{margin-left:-6px}
     .nav-link{font-size:13px; color:rgba(244,236,216,.78)}
     .nav-cta{font-size:13px}
 
