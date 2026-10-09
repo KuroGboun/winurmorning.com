@@ -45,9 +45,11 @@
     --font-primary:'Bricolage Grotesque',sans-serif;
     --font-secondary:-apple-system,'SF Pro Text',system-ui,sans-serif;
   }
-  /* ONE screen, no scroll — the hero IS the page. The how-it-works and FAQ
-     sections were pulled back out on 2026-08-19; they land later. */
-  html,body{margin:0; height:100%; overflow:hidden}
+  /* The sky is the BACKGROUND now (Kuro, 2026-10-09: "clouds stay put and we
+     scroll the components"). The .hero stays position:fixed exactly as before
+     and the sections from the board "Landing Page REAL v3" scroll over it. */
+  html,body{margin:0; min-height:100%}
+  html{scroll-behavior:smooth}
   /* The body carries the SAME gradient as the hero, not a flat blue. Safari's
      rubber-band overscroll paints the body behind the page, and a flat colour
      there read as blue bands top and bottom. */
@@ -61,7 +63,7 @@
      collapsed the visible area grew taller than the hero and the body showed
      through above and below. A fixed inset:0 box is pinned to the viewport
      itself, so it stays exactly full-bleed through every chrome transition. */
-  .hero{position:fixed; inset:0; overflow:hidden; display:flex; flex-direction:column;
+  .hero{position:fixed; inset:0; overflow:hidden; z-index:0;
         background:linear-gradient(178deg,#6FA3DA 0%,#4C86C6 30%,#8DB8E4 68%,#CFE0F1 100%)}
 
   /* The sky is real footage, with its OWN frame 0 (assets/hero-poster.jpg,
@@ -111,7 +113,7 @@
   .c3{left:18%; bottom:20px; width:62%; height:320px; background:rgba(255,255,255,.28); filter:blur(56px)}
 
   /* Everything readable rides above the weather. */
-  .frame{position:relative; z-index:7; flex:1; display:flex; flex-direction:column;
+  .frame{position:relative; z-index:7; min-height:100svh; display:flex; flex-direction:column;
          width:100%; max-width:1440px; margin:0 auto}
 
   /* The nav is FULL WIDTH — deliberately outside the 1440 frame that centres
@@ -120,7 +122,7 @@
      now they hug the viewport with a fixed gutter no matter how wide it gets.
      The sky already runs edge to edge under the notch (viewport-fit=cover);
      only the content steps back off it. */
-  .nav{position:relative; z-index:7; display:flex; align-items:center; justify-content:space-between;
+  .nav{position:absolute; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
        padding:calc(26px + env(safe-area-inset-top)) calc(28px + env(safe-area-inset-right))
                26px calc(28px + env(safe-area-inset-left))}
   .brand{display:flex; align-items:center; gap:13px; color:var(--cream)}
@@ -139,7 +141,7 @@
      bottom bias so it holds that proportion at any viewport height, not just
      at the mock's fixed one. */
   .content{flex:1; display:flex; flex-direction:column; align-items:center;
-           justify-content:center; text-align:center; padding:0 72px 8vh}
+           justify-content:center; text-align:center; padding:90px 72px 8vh}
   h1{margin:0; font-family:var(--font-primary); font-size:clamp(44px,5vw,72px);
      font-weight:800; line-height:.88; letter-spacing:-.045em; color:var(--cream)}
   .squiggle{display:block; margin-top:14px; width:220px; height:auto}
@@ -191,7 +193,7 @@
     .c2{right:-80px; top:auto; bottom:90px; width:340px; height:220px; background:rgba(255,255,255,.24); filter:blur(44px)}
     .c3{display:none}
 
-    .content{padding:0 20px calc(10vh + env(safe-area-inset-bottom))}
+    .content{padding:80px 20px calc(10vh + env(safe-area-inset-bottom))}
     h1{font-size:clamp(40px,13.3vw,52px)}
     .squiggle{width:160px; margin-top:12px; stroke-width:11}
     .tagline{margin-top:16px; font-size:16px}
@@ -215,48 +217,263 @@
   @media (prefers-reduced-motion: reduce){
     .herovid{display:none}
   }
+
+  /* ── Everything below the first screen (board: Landing Page REAL v3) ──
+     The board draws these on white. Here they ride over the fixed sky, so
+     each section sits in a frosted cream panel: the ink type stays as the
+     board set it, and the clouds show between the panels. ── */
+  main{position:relative; z-index:10}
+  .sec{width:100%; padding:0 72px; display:flex; flex-direction:column; align-items:center}
+  /* White cards over the sky, with ROOM (Kuro, 2026-10-09, after the thirdspace
+     reference): a wide gutter to the viewport edge, a deep inner padding, and
+     a full breath of sky between one card and the next. */
+  /* ONE white block after the hero (Kuro, 2026-10-09): the clouds are the
+     first screen, then the page scrolls up into a single white sheet that
+     carries every section and the footer. */
+  .sheet{position:relative; z-index:10; background:#FFFFFF; color:var(--ink); padding:0 0 0}
+  /* The sky dissolves into the sheet (board v3, 2026-10-09: a 380px gradient
+     plus three blurred white blobs at the hero's foot) — no hard edge. */
+  .fade{position:relative; z-index:10; height:380px; margin-top:-340px; overflow:hidden; pointer-events:none;
+        background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.3) 45%,rgba(255,255,255,.7) 85%,#FFFFFF 100%)}
+  /* Safari's bottom bar samples the page under it — a solid white foot made
+     the bar go flat white over the clouds. The fade reaches white only on
+     its last pixels (and the blobs sit below the fold), so the bar stays
+     sky-tinted on the first screen. The bar itself is Safari's: it can't be
+     removed, only blended. */
+  .fade i{position:absolute; border-radius:50%; background:#FFFFFF; bottom:-150px}
+  .fade i:nth-child(1){left:-8%; width:50%; height:260px; filter:blur(40px)}
+  .fade i:nth-child(2){left:29%; width:57%; height:280px; bottom:-140px; filter:blur(48px)}
+  .fade i:nth-child(3){right:-10%; width:49%; height:250px; bottom:-100px; filter:blur(40px)}
+  .sec{padding:0 clamp(16px,6vw,120px)}
+  .panel{width:100%; max-width:1480px; padding:clamp(40px,5vw,72px) 0}
+  .display{font-family:var(--font-primary); font-weight:800; letter-spacing:-.045em; color:var(--ink);
+           text-wrap:balance; margin:0}
+  .body{font-family:var(--font-secondary); color:rgba(30,42,36,.66); text-wrap:pretty; margin:0}
+  .eyebrow{font-family:var(--font-primary); font-size:11px; font-weight:700; letter-spacing:.16em;
+           text-transform:uppercase; color:#9A968B}
+  .squiggle-sm{display:block; width:170px; height:auto}
+
+  /* 2 · idea + feature rows */
+  .idea{max-width:760px; text-align:center; display:flex; flex-direction:column; align-items:center; gap:14px; margin:0 auto 24px}
+  .idea .display{font-size:clamp(40px,4.5vw,56px); line-height:.9}
+  .row{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:96px; align-items:center;
+       width:100%; max-width:1080px; margin:0 auto; padding:72px 0}
+  .row .copy{display:flex; flex-direction:column; gap:18px; max-width:420px}
+  .row .copy .display{font-size:clamp(34px,3.6vw,46px); line-height:.92; letter-spacing:-.04em}
+  .row .copy .body{font-size:18px; line-height:1.55}
+  .row .shot{display:flex}
+  .row .shot.right{justify-content:flex-end}
+  .row .shot.left{justify-content:flex-start}
+  .phone{position:relative; flex:none; width:340px; aspect-ratio:340/723; background:#0C0C0E; border-radius:61px;
+         padding:11px; box-shadow:inset 0 0 0 2px #4A4A4E, 0 30px 70px rgba(30,42,36,.35)}
+  .phone i{position:absolute; width:4px; background:#3A3A3E; border-radius:3px 0 0 3px; left:-3px}
+  .phone i:nth-child(1){top:19%; height:4.4%}
+  .phone i:nth-child(2){top:27%; height:9%}
+  .phone i:nth-child(3){top:38%; height:9%}
+  .phone i:nth-child(4){left:auto; right:-3px; top:30%; height:14%; border-radius:0 3px 3px 0}
+  .screen{width:100%; height:100%; border-radius:50px; overflow:hidden; background:#000; position:relative}
+  .screen img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 0; display:block}
+  .screen img.bleed{inset:auto; left:-2.5%; top:0; width:105%; height:auto}
+  /* bum of the day card, drawn in CSS on the board */
+  .bum{position:absolute; inset:0; overflow:hidden; background:#3A2E4A; font-family:var(--font-primary)}
+  .bum img{object-position:50% 30%}
+  .bum .dim{position:absolute; left:0; right:0; bottom:0; height:40%; background:linear-gradient(to top,rgba(58,46,74,.92),rgba(58,46,74,0))}
+  .bum .stamp{position:absolute; left:7%; top:11%; display:flex; flex-direction:column; align-items:flex-start; gap:4px}
+  .bum .stamp b{display:block; font-size:38px; font-weight:800; line-height:1; padding:4px 7px 2px; transform:rotate(-2deg)}
+  .bum .stamp b.of{font-size:24px; margin-left:13px; transform:rotate(-1deg); background:var(--gold); color:var(--ink); padding:4px 8px 2px}
+  .bum .stamp b.w1{background:var(--cream); color:var(--ink)}
+  .bum .stamp b.day{background:var(--terra); color:#fff; margin-left:3px}
+  .bum .who{position:absolute; left:7%; right:7%; bottom:8%; display:flex; flex-direction:column; align-items:flex-start; gap:8px}
+  .bum .who .name{background:var(--cream); color:var(--ink); font-size:26px; font-weight:800; padding:2px 7px 1px; transform:rotate(-1.5deg)}
+  .bum .who .kept{background:var(--ink); color:var(--gold); font-size:14px; font-weight:700; padding:4px 8px}
+  .bum .who .cap{font-family:var(--font-secondary); color:#fff; font-size:14px; line-height:1.35}
+
+  /* 4 · testimonial */
+  .testi{display:grid; grid-template-columns:minmax(0,1fr) 420px; gap:64px; width:100%; max-width:1080px; margin:0 auto; align-items:center}
+  .testi .quote{font-family:var(--font-secondary); font-size:clamp(19px,2vw,24px); font-weight:500; line-height:1.45; letter-spacing:-.012em; color:var(--ink); text-wrap:pretty; margin:0}
+
+  .testi .who b{display:block; font-family:var(--font-primary); font-size:16px; font-weight:800; letter-spacing:-.01em}
+  .testi .pic{min-width:0; aspect-ratio:4/5; border-radius:18px; overflow:hidden; box-shadow:0 24px 60px rgba(30,42,36,.3)}
+  .testi .pic img{width:100%; height:100%; object-fit:cover; object-position:50% 80%; display:block; transform:scale(1.25); transform-origin:50% 85%}
+
+  /* 5 · reviews marquee */
+  .reviews{padding:40px 0; overflow:hidden}
+  .track{display:flex; gap:40px; width:max-content; animation:marquee 150s linear infinite}
+  .reviews:hover .track{animation-play-state:paused}
+  .rev{width:520px; max-width:80vw; flex:none; display:flex; flex-direction:column; justify-content:space-between; gap:28px; padding-right:40px; border-right:1px solid rgba(30,42,36,.12)}
+  .rev .stars{color:var(--gold); font-size:16px; line-height:1; letter-spacing:.04em}
+  .rev p{font-family:var(--font-secondary); font-size:21px; font-weight:500; line-height:1.35; letter-spacing:-.012em; color:var(--ink); text-wrap:pretty; margin:16px 0 0}
+  .rev .who b{display:block; font-family:var(--font-primary); font-size:15px; font-weight:800; letter-spacing:-.01em}
+  .rev .who .eyebrow{margin-top:4px}
+  @keyframes marquee{from{transform:translateX(0)} to{transform:translateX(-50%)}}
+
+  /* 6 · close */
+  .close{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:48px; align-items:end; width:100%}
+  .close .display{font-size:clamp(52px,7vw,88px); line-height:.86; letter-spacing:-.05em}
+  .close .cta{display:flex; flex-direction:column; align-items:flex-start; gap:22px; padding-bottom:6px}
+  .close .body{font-size:19px; line-height:1.5; max-width:380px}
+  .close .appstore{margin-top:0}
+
+
+  /* Footer like the reference (Kuro, 2026-10-09): centred links, a quiet
+     copyright line under them, nothing else. */
+  footer{width:100%; padding:clamp(64px,8vh,120px) 24px calc(48px + env(safe-area-inset-bottom));
+         display:flex; flex-direction:column; align-items:center; gap:28px; color:var(--ink)}
+  footer .links{display:flex; flex-wrap:wrap; justify-content:center; gap:32px;
+                font-family:var(--font-secondary); font-size:16px; color:rgba(30,42,36,.55)}
+  footer .links a{color:inherit; transition:color .16s ease}
+  footer .links a:hover{color:var(--ink)}
+  footer .copy{font-family:var(--font-secondary); font-size:13px; color:rgba(30,42,36,.4)}
+
+  @media (max-width:900px){
+    .sec{padding:0 24px}
+    .fade{height:260px; margin-top:-230px}
+    .row{grid-template-columns:1fr; gap:40px; padding:40px 0; justify-items:center; text-align:center}
+    .row .copy{align-items:center}
+    .row .shot, .row .shot.right, .row .shot.left{justify-content:center}
+    .row .shot{order:1}
+    .row .copy{order:2}
+    .phone{width:min(300px,78vw); border-radius:54px}
+    .screen{border-radius:44px}
+    .testi{grid-template-columns:1fr; gap:36px}
+    .testi .pic{max-width:360px}
+    .close{grid-template-columns:1fr; gap:28px; align-items:start}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .track{animation:none}
+  }
 </style>
 </head>
 <body>
 
-<section class="hero">
-  <img class="heroposter" src="assets/hero-poster.jpg?v=2" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
-  <video class="herovid" id="heroVid" muted loop autoplay playsinline webkit-playsinline preload="auto" aria-hidden="true"></video>
+<!-- The sky: fixed to the viewport, everything else scrolls over it. -->
+<div class="hero" aria-hidden="true">
+  <img class="heroposter" src="assets/hero-poster.jpg?v=2" alt="" decoding="async" fetchpriority="high">
+  <video class="herovid" id="heroVid" muted loop autoplay playsinline webkit-playsinline preload="auto"></video>
   <div class="wash"></div>
-
   <div class="cloud c1"></div>
   <div class="cloud c2"></div>
   <div class="cloud c3"></div>
+</div>
 
-  <div class="nav">
-    <a class="brand" href="/">
-      <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
-      <span>WIN<br>YOUR<br>MORNING</span>
-    </a>
-    <div class="nav-links">
-      <a class="nav-link" href="/privacy">Privacy</a>
-      <a class="nav-link" href="/terms">Terms</a>
-      <a class="nav-cta" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
-    </div>
+<div class="nav">
+  <a class="brand" href="/">
+    <svg width="38" height="38" viewBox="0 0 120 120" aria-hidden="true"><defs><radialGradient id="navSun" cx="50%" cy="55%" r="55%"><stop offset="0" stop-color="#F2B84B"></stop><stop offset="1" stop-color="#C4562F"></stop></radialGradient></defs><circle cx="60" cy="60" r="44" fill="url(#navSun)"></circle></svg>
+    <span>WIN<br>YOUR<br>MORNING</span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/privacy">Privacy</a>
+    <a class="nav-link" href="/terms">Terms</a>
+    <a class="nav-cta" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
   </div>
+</div>
 
-  <div class="frame">
+<main>
+  <!-- 1 · HERO copy — the first screen, as before -->
+  <section class="frame">
     <div class="content">
       <h1>win your<br>morning.</h1>
-      <svg class="squiggle" width="420" height="24" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
-
+      <svg class="squiggle" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
       <p class="tagline">wake up with your friends.</p>
-
       <a class="appstore" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
-        <span class="as-stack">
-          <span class="as-pre">Download on the</span>
-          <span class="as-name">App Store</span>
-        </span>
+        <span class="as-stack"><span class="as-pre">Download on the</span><span class="as-name">App Store</span></span>
       </a>
     </div>
-  </div>
-</section>
+  </section>
+
+  <div class="fade" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="sheet">
+  <!-- 2 · IDEA + FEATURE ROWS (board: Landing Page REAL v3) -->
+  <section class="sec" id="how">
+    <div class="panel">
+      <div class="idea">
+        <h2 class="display">your friends are<br>the alarm now.</h2>
+        <svg class="squiggle-sm" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
+      </div>
+
+      <div class="row">
+        <div class="shot right"><div class="phone"><i></i><i></i><i></i><i></i><div class="screen"><img src="assets/app-set-promises.jpg" alt="Set your promises screen" loading="lazy"></div></div></div>
+        <div class="copy"><h3 class="display">promise it the<br>night before.</h3><p class="body">set your wake-up time and your promises, then lock it in. your whole squad sees every one before you go to bed.</p></div>
+      </div>
+
+      <div class="row">
+        <div class="copy"><h3 class="display">prove it with<br>a photo.</h3><p class="body">morning comes and check-in opens. snap a photo before your time runs out. no photo, no credit.</p></div>
+        <div class="shot left"><div class="phone"><i></i><i></i><i></i><i></i><div class="screen"><img class="bleed" src="assets/home-ok-rise-open-girlies.jpg" alt="Rise and shine home screen" loading="lazy"></div></div></div>
+      </div>
+
+      <div class="row">
+        <div class="shot right"><div class="phone"><i></i><i></i><i></i><i></i><div class="screen"><div class="bum"><img src="assets/emma-comeback.jpg" alt="Emma, bum of the day" loading="lazy"><div class="dim"></div><div class="stamp"><b class="w1">BUM</b><b class="of">OF THE</b><b class="day">DAY</b></div><div class="who"><div class="name">Emma</div><div class="kept">0/3 kept</div><div class="cap">Everyone else was up. This one was theoretical.</div></div></div></div></div></div>
+        <div class="copy"><h3 class="display">sleep in and you’re<br>bum of the day.</h3><p class="body">your face goes out to the whole squad, with a caption. everyone else was up.</p></div>
+      </div>
+
+          </div>
+  </section>
+
+  <!-- 4 · SPLIT TESTIMONIAL -->
+  <section class="sec">
+    <div class="panel">
+      <div class="testi">
+        <div style="display:flex; flex-direction:column; gap:36px">
+          <p class="quote">I was tired of being consistent for three days, then completely falling off my morning routine. I kept thinking: how am I supposed to go far in life if I can’t even conquer my mornings? So my friends and I started using Win Your Morning to commit to our goals, check in, and hold each other accountable. Turns out, discipline is a lot easier when you’re not doing it alone.</p>
+          <div class="who"><b>– founder</b></div>
+        </div>
+        <div class="pic"><img src="assets/founder.jpg" alt="The founder and two friends after a 10K, medals in their teeth" loading="lazy"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · REVIEWS -->
+  <section class="sec">
+    <div class="panel reviews">
+      <div class="track">
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“It’s a very good app, helps you literally win your mornings. Set a few goals and actually achieve them. I have many friend groups and it’s cool to connect with them over productivity and not just boring regular streaks.”</p></div><div class="who"><b>Ken Dekpor</b><div class="eyebrow">App Store · Oct 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“I’m a very competitive and honest guy. So when I’ve got an app that can incorporate both of that and also allows me beat my friends (and call them bums), it motivates me more to win my morning.”</p></div><div class="who"><b>Ski.Lza</b><div class="eyebrow">App Store · Sep 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“I love this idea my friends and I are pushing each other now!!!”</p></div><div class="who"><b>Occupy2906</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“A great app that helps you with accountability while maintaining a healthy social media environment, I really like it!”</p></div><div class="who"><b>nickname winner</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“Very helpful for productivity!”</p></div><div class="who"><b>Rose Mabel</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“This app really gets you up and running!!! And it’s such a cute concept with friends! Want something productive but also brings community together, this is the app for youu!! Don’t sleep on it, and win your morning!!! 😌🤩”</p></div><div class="who"><b>Sylviesilver🦋</b><div class="eyebrow">App Store · Oct 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“It makes me productive. I set my goals for the morning and try to fufil them each day. I feel more organized😌❤️ Plus, you could compete with your friends. It’s soo warm and encouraging. Love this app!!!”</p></div><div class="who"><b>Julia. O</b><div class="eyebrow">App Store · Sep 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“Best app out there! It keeps you accountable”</p></div><div class="who"><b>King______69</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“This has helped me with a lot of groggy mornings, and lack of consistency”</p></div><div class="who"><b>solsuf</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“It’s a very good app, helps you literally win your mornings. Set a few goals and actually achieve them. I have many friend groups and it’s cool to connect with them over productivity and not just boring regular streaks.”</p></div><div class="who"><b>Ken Dekpor</b><div class="eyebrow">App Store · Oct 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“I’m a very competitive and honest guy. So when I’ve got an app that can incorporate both of that and also allows me beat my friends (and call them bums), it motivates me more to win my morning.”</p></div><div class="who"><b>Ski.Lza</b><div class="eyebrow">App Store · Sep 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“I love this idea my friends and I are pushing each other now!!!”</p></div><div class="who"><b>Occupy2906</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“A great app that helps you with accountability while maintaining a healthy social media environment, I really like it!”</p></div><div class="who"><b>nickname winner</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“Very helpful for productivity!”</p></div><div class="who"><b>Rose Mabel</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“This app really gets you up and running!!! And it’s such a cute concept with friends! Want something productive but also brings community together, this is the app for youu!! Don’t sleep on it, and win your morning!!! 😌🤩”</p></div><div class="who"><b>Sylviesilver🦋</b><div class="eyebrow">App Store · Oct 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“It makes me productive. I set my goals for the morning and try to fufil them each day. I feel more organized😌❤️ Plus, you could compete with your friends. It’s soo warm and encouraging. Love this app!!!”</p></div><div class="who"><b>Julia. O</b><div class="eyebrow">App Store · Sep 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“Best app out there! It keeps you accountable”</p></div><div class="who"><b>King______69</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+        <div class="rev"><div><div class="stars">★★★★★</div><p>“This has helped me with a lot of groggy mornings, and lack of consistency”</p></div><div class="who"><b>solsuf</b><div class="eyebrow">App Store · Aug 2026</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · CLOSE -->
+  <section class="sec" id="get">
+    <div class="panel">
+      <div class="close">
+        <div style="display:flex; flex-direction:column; gap:20px">
+          <h2 class="display">rise or<br>be roasted.</h2>
+          <svg class="squiggle" viewBox="0 0 420 24" fill="none" stroke="#E0A032" stroke-width="9" stroke-linecap="round" aria-hidden="true"><path d="M6 15 Q 42 5 78 13 T 150 13 T 222 13 T 294 13 T 366 12 T 414 11"></path></svg>
+        </div>
+        <div class="cta">
+          <p class="body">free on iphone. make a squad, set a time, and see who actually shows up.</p>
+          <a class="appstore" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"/></svg>
+        <span class="as-stack"><span class="as-pre">Download on the</span><span class="as-name">App Store</span></span>
+      </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<footer>
+  <div class="links"><a href="/privacy">Privacy</a><a href="/terms">Terms</a><a href="mailto:dopaminecorp830@gmail.com">Contact</a></div>
+  <div class="copy">© 2026 win your morning.</div>
+</footer>
+  </div><!-- /sheet -->
+</main>
 
 <script>
 /* ── Hero video ───────────────────────────────────────────────────────────
