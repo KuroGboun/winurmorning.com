@@ -273,10 +273,9 @@
   .phone i:nth-child(4){left:auto; right:-3px; top:30%; height:14%; border-radius:0 3px 3px 0}
   .screen{width:100%; height:100%; border-radius:50px; overflow:hidden; background:#000; position:relative}
   .screen img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 0; display:block}
-  /* Fills the screen to the bottom edge (it used to be sized by width alone
-     and stopped ~4% short, leaving a black band under the picture). The
-     push-in also trims the screenshot's cream side edges, as the board did. */
-  .screen img.bleed{transform:scale(1.06); transform-origin:50% 0}
+  /* Plain cover: the screenshot is a touch wider than the screen, so cover
+     trims its cream side edges (the board's -7.4px) and reaches the bottom. */
+  .screen img.bleed{object-position:50% 0}
   /* bum of the day card, drawn in CSS on the board */
   .bum{position:absolute; inset:0; overflow:hidden; background:#3A2E4A; font-family:var(--font-primary)}
   .bum img{object-position:50% 30%}
