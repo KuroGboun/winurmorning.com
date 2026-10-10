@@ -273,9 +273,12 @@
   .phone i:nth-child(4){left:auto; right:-3px; top:30%; height:14%; border-radius:0 3px 3px 0}
   .screen{width:100%; height:100%; border-radius:50px; overflow:hidden; background:#000; position:relative}
   .screen img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:50% 0; display:block}
-  /* Plain cover: the screenshot is a touch wider than the screen, so cover
-     trims its cream side edges (the board's -7.4px) and reaches the bottom. */
-  .screen img.bleed{object-position:50% 0}
+  /* This phone takes its height FROM the screenshot (Kuro, 2026-10-10): the
+     picture sits in flow at the board's 105% width, and the frame ends where
+     the picture ends — no band under it, no zoom. */
+  .phone.fit{aspect-ratio:auto; height:auto}
+  .phone.fit .screen{height:auto; line-height:0}
+  .screen img.bleed{position:static; width:105%; height:auto; margin-left:-2.5%; display:block}
   /* bum of the day card, drawn in CSS on the board */
   .bum{position:absolute; inset:0; overflow:hidden; background:#3A2E4A; font-family:var(--font-primary)}
   .bum img{object-position:50% 30%}
@@ -401,7 +404,7 @@
 
       <div class="row">
         <div class="copy"><h3 class="display">prove it with<br>a photo.</h3><p class="body">morning comes and check-in opens. snap a photo before your time runs out. no photo, no credit.</p></div>
-        <div class="shot left"><div class="phone"><i></i><i></i><i></i><i></i><div class="screen"><img class="bleed" src="assets/home-ok-rise-open-girlies.jpg" alt="Rise and shine home screen" loading="lazy"></div></div></div>
+        <div class="shot left"><div class="phone fit"><i></i><i></i><i></i><i></i><div class="screen"><img class="bleed" src="assets/home-ok-rise-open-girlies.jpg" alt="Rise and shine home screen" loading="lazy"></div></div></div>
       </div>
 
       <div class="row">
