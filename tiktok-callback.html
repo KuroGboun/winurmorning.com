@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>TikTok login</title>
+<style>
+  body{margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+       font-family:-apple-system,system-ui,sans-serif; background:#FFFFFF; color:#1E2A24; padding:24px}
+  main{max-width:520px; width:100%}
+  h1{font-size:28px; margin:0 0 12px}
+  p{color:rgba(30,42,36,.66); line-height:1.5}
+  code{display:block; padding:14px; border:1px solid rgba(30,42,36,.12); border-radius:12px;
+       word-break:break-all; font-size:13px; margin:16px 0; user-select:all}
+  button{font:inherit; font-weight:700; padding:12px 18px; border:0; border-radius:12px; background:#E0A032; color:#1E2A24}
+</style>
+</head>
+<body>
+<main>
+  <h1 id="h">TikTok login</h1>
+  <p id="p">Nothing to show. This page only receives the sign-in code from TikTok.</p>
+  <code id="c" hidden></code>
+  <button id="b" hidden>Copy code</button>
+</main>
+<script>
+/* The redirect target for WYM Poster's one-time TikTok sign-in. It reads the
+   code off the URL and shows it for the terminal to pick up — nothing is sent
+   anywhere from this page. */
+(function () {
+  var q = new URLSearchParams(location.search), code = q.get('code'), err = q.get('error');
+  var h = document.getElementById('h'), p = document.getElementById('p'),
+      c = document.getElementById('c'), b = document.getElementById('b');
+  if (err) { h.textContent = 'TikTok said no'; p.textContent = (q.get('error_description') || err); return; }
+  if (!code) return;
+  h.textContent = 'Signed in';
+  p.textContent = 'Copy this code and paste it into the terminal. It expires in a few minutes.';
+  c.textContent = code; c.hidden = false; b.hidden = false;
+  b.onclick = function () { navigator.clipboard.writeText(code).then(function () { b.textContent = 'Copied'; }); };
+})();
+</script>
+</body>
+</html>
