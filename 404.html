@@ -77,8 +77,12 @@
   // The invite code is still sitting in the URL Safari tried to load
   // (/join/ABC123) even though nothing lives at that path — no server, just
   // reading it back out client-side.
+  // The code: in the fragment (/join/#CODE, links from build 52 on — the
+  // fragment never reaches the server, so /join/ is one real 200 page and
+  // iMessage can draw its card) or in the path (/join/CODE, older links).
   var m = location.pathname.match(/\/join\/([^\/]+)/);
   var code = m && m[1] ? decodeURIComponent(m[1]) : null;
+  if (!code && location.hash.length > 1) code = decodeURIComponent(location.hash.slice(1));
   var onIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
 
   if (code) {

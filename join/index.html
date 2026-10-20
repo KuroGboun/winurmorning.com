@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>You've been invited to Win Your Morning</title>
+<!-- The link-preview card iMessage (and WhatsApp, Discord…) draws under a
+     /join/<code> link (2026-10-20). GitHub Pages is static, so the card can't
+     carry the inviter's name; the invite text in the message does. The image
+     is assets/invite.png, rendered from assets/invite-source.html. -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Win Your Morning">
+<meta property="og:title" content="You've been invited to Win Your Morning">
+<meta property="og:description" content="Wake up with your friends. Post a photo by the deadline, or wake up as Bum of the Day.">
+<meta property="og:image" content="https://winurmorning.com/assets/invite.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="1200">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="You've been invited to Win Your Morning">
+<meta name="twitter:image" content="https://winurmorning.com/assets/invite.png">
+<!--
+  THE /join/ PAGE (2026-10-20): a real file, so /join/#CODE answers 200 and
+  iMessage draws the link card from the tags above (a 404 status, which
+  GitHub Pages gives 404.html, is refused). Kept in step with 404.html,
+  which still catches the older /join/CODE shape.
+  404.html serves any unmatched path — which is what makes
+  it the Universal Link fallback for /join/<code>. Nothing hosts a real page
+  per invite code; iOS never even requests one when the app is installed AND
+  that install's entitlements associate this domain (Associated Domains
+  intercepts the tap before Safari opens).
+
+  2026-08-24: builds in the wild only associate kurogboun.github.io, so a
+  /join link on THIS domain lands here even with the app installed. For that
+  case the page now bounces into the app via the custom scheme
+  (winyourmorning://join/<code>), which every shipped build — RN era included
+  — has always registered. Auto-attempted once on iPhone/iPad, and offered as
+  the primary button; the App Store link stays as the no-app fallback. Once
+  installs broadly carry the winurmorning.com entitlement this page goes back
+  to being the not-installed page only, and none of this hurts.
+
+  Switched to the App Store product page 2026-08-20, the day the app went
+  live. No app rebuild, no new AASA entry, no DNS for any of this.
+-->
+<style>
+  html,body{height:100%;margin:0}
+  body{
+    font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;
+    background:#4C86C6;color:#F4ECD8;
+    display:grid;place-items:center;text-align:center;padding:24px;
+    box-sizing:border-box;
+  }
+  main{max-width:360px}
+  h1{font-size:22px;margin:0 0 8px}
+  p{font-size:15px;line-height:1.5;opacity:.9;margin:0 0 24px}
+  a.cta{
+    display:inline-block;background:#F4ECD8;color:#4C86C6;
+    font-weight:600;text-decoration:none;
+    padding:12px 28px;border-radius:999px;font-size:15px;
+  }
+  a.cta.secondary{
+    background:transparent;color:#F4ECD8;
+    border:1.5px solid rgba(244,236,216,.55);
+    margin-top:10px;
+  }
+  .stack{display:flex;flex-direction:column;align-items:center}
+  code{background:rgba(244,236,216,.15);padding:2px 6px;border-radius:6px}
+</style>
+</head>
+<body>
+<main>
+  <h1>You've been invited to Win Your Morning 🌅</h1>
+  <p id="codeLine">Someone wants you in their squad.</p>
+  <div class="stack">
+    <a class="cta" id="openLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875" hidden>Open in the app</a>
+    <a class="cta" id="ctaLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
+  </div>
+</main>
+<script>
+  var STORE_URL = "https://apps.apple.com/ca/app/win-your-morning/id6791211875";
+
+  // The invite code is still sitting in the URL Safari tried to load
+  // (/join/ABC123) even though nothing lives at that path — no server, just
+  // reading it back out client-side.
+  // The code: in the fragment (/join/#CODE, links from build 52 on — the
+  // fragment never reaches the server, so /join/ is one real 200 page and
+  // iMessage can draw its card) or in the path (/join/CODE, older links).
+  var m = location.pathname.match(/\/join\/([^\/]+)/);
+  var code = m && m[1] ? decodeURIComponent(m[1]) : null;
+  if (!code && location.hash.length > 1) code = decodeURIComponent(location.hash.slice(1));
+  var onIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+
+  if (code) {
+    document.getElementById('codeLine').textContent =
+      "Someone wants you in their squad. Once you have the app, enter code " + code + " to join.";
+
+    // The scheme door, for the installed-but-lands-here case. Kept as a real
+    // link (not only the auto-attempt below): if the attempt's moment passes,
+    // the button is still there.
+    var appUrl = "winyourmorning://join/" + encodeURIComponent(code);
+    var open = document.getElementById('openLink');
+    open.href = appUrl;
+    open.hidden = false;
+    document.getElementById('ctaLink').className = 'cta secondary';
+
+    // One auto-attempt, iPhone/iPad only. App installed → iOS asks to open
+    // it and the join screen comes up with the code. Not installed → Safari
+    // shows a one-line "address is invalid" alert and this page, with the
+    // store button, is still standing right behind it.
+    if (onIOS) { setTimeout(function () { location.href = appUrl; }, 60); }
+  }
+  document.getElementById('ctaLink').href = STORE_URL;
+</script>
+</body>
+</html>

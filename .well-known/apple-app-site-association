@@ -4,11 +4,17 @@
     "details": [
       {
         "appID": "4B4U9N879U.com.kuro.winyourmorning",
-        "paths": ["/join/*"]
+        "paths": [
+          "/join/",
+          "/join/*"
+        ]
       },
       {
         "appID": "4B4U9N879U.com.kuro.winyourmorning.dev",
-        "paths": ["/join/*"]
+        "paths": [
+          "/join/",
+          "/join/*"
+        ]
       }
     ]
   }
