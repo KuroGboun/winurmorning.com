@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!-- Source for invite.png (1200×1200) — the link-preview card iMessage draws
+     under a /join/<code> link (404.html's og:image). The site's hero, square:
+     the clouds, the cream title, the gold squiggle, one line. Re-render:
+     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless=new \
+        --window-size=1200,1200 --hide-scrollbars --allow-file-access-from-files \
+        --screenshot=assets/invite.png file://…/assets/invite-source.html
+     The font loads from the app repo's bundled Bricolage; adjust the path. -->
+<html><head><meta charset="utf-8"><style>
+  *{box-sizing:border-box;margin:0}
+  @font-face{font-family:'Bricolage';src:url('file:///Users/k.gboun/Documents/win-your-morning/Packages/WYMKit/Sources/WYMDesign/Resources/Fonts/BricolageGrotesque_800ExtraBold.ttf')}
+  html,body{width:1200px;height:1200px;overflow:hidden}
+  .card{position:relative;width:1200px;height:1200px;overflow:hidden;
+        font-family:'Bricolage','Bricolage Grotesque',sans-serif}
+  .sky{position:absolute;inset:0;background:url('hero-poster.jpg') 75% 35%/auto 165% no-repeat}
+  .tint{position:absolute;inset:0;background:rgba(76,134,198,.22)}
+  .content{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+           justify-content:center;text-align:center;padding:0 80px}
+  h1{font-size:200px;font-weight:800;line-height:.86;letter-spacing:-.045em;color:#F4ECD8;
+     text-shadow:0 4px 18px rgba(30,60,100,.28)}
+  .sq{display:block;margin-top:36px}
+  .tag{font-family:-apple-system,'SF Pro Text',system-ui,sans-serif;font-size:50px;font-weight:500;
+       color:#F4ECD8;margin-top:36px;text-shadow:0 2px 12px rgba(30,60,100,.28)}
+</style></head>
+<body>
+  <div class="card">
+    <div class="sky"></div>
+    <div class="tint"></div>
+    <div class="content">
+      <h1>you're<br>invited.</h1>
+      <svg class="sq" width="440" height="34" viewBox="0 0 150 15" fill="none" stroke="#E0A032" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9 Q16 3 28 8 T54 8 T80 8 T106 8 T132 7 T147 8"></path></svg>
+      <p class="tag">wake up with your friends.</p>
+    </div>
+  </div>
+</body></html>
