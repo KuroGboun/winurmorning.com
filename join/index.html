@@ -73,6 +73,7 @@
   <div class="stack">
     <a class="cta" id="openLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875" hidden>Open in the app</a>
     <a class="cta" id="ctaLink" href="https://apps.apple.com/ca/app/win-your-morning/id6791211875">Get the app</a>
+    <a class="cta secondary" id="copyLink" href="#" hidden>Copy the invite</a>
   </div>
 </main>
 <script>
@@ -91,7 +92,25 @@
 
   if (code) {
     document.getElementById('codeLine').textContent =
-      "Someone wants you in their squad. Once you have the app, enter code " + code + " to join.";
+      "Someone wants you in their squad. Get the app, then paste this link — or the code " + code + " — into \"I have a code\".";
+
+    // The code onto the clipboard (2026-11-06): a friend who installs from
+    // here lands back in the app with the link on their clipboard, and the
+    // code box offers "Paste your invite". Best effort — some browsers
+    // refuse without a gesture, so the buttons below try again on tap.
+    var copyText = location.href;
+    function copyInvite() {
+      try { navigator.clipboard.writeText(copyText).catch(function () {}); } catch (e) {}
+    }
+    copyInvite();
+    var copyBtn = document.getElementById('copyLink');
+    copyBtn.hidden = false;
+    copyBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      copyInvite();
+      copyBtn.textContent = 'Copied — paste it in the app';
+    });
+    document.getElementById('ctaLink').addEventListener('click', copyInvite);
 
     // The scheme door, for the installed-but-lands-here case. Kept as a real
     // link (not only the auto-attempt below): if the attempt's moment passes,
@@ -106,8 +125,18 @@
     // it and the join screen comes up with the code. Not installed → Safari
     // shows a one-line "address is invalid" alert and this page, with the
     // store button, is still standing right behind it.
-    if (onIOS) { setTimeout(function () { location.href = appUrl; }, 60); }
+    // Not inside Instagram / Snapchat / TikTok / Facebook's own browser:
+    // those block the scheme hop silently, so the copy button above is the
+    // way through there (2026-11-06).
+    var inApp = /Instagram|Snapchat|TikTok|FBAN|FBAV|musical_ly/i.test(navigator.userAgent);
+    if (onIOS && !inApp) { setTimeout(function () { location.href = appUrl; }, 60); }
   }
+  // Counted (2026-11-06): the same page_views beacon the landing page sends,
+  // tagged join, so arrivals here can be read against joins.
+  try {
+    fetch('https://bdwaqpnycvywhhuzhlga.supabase.co/functions/v1/waitlist?src=join' + (code ? '-code' : ''),
+      { cache: 'no-store' }).catch(function () {});
+  } catch (e) {}
   document.getElementById('ctaLink').href = STORE_URL;
 </script>
 </body>
