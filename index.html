@@ -69,13 +69,6 @@
   .c1{left:-60px; top:120px; width:460px; height:240px; background:rgba(255,255,255,.22); filter:blur(38px)}
   .c2{right:-80px; top:300px; width:560px; height:300px; background:rgba(255,255,255,.2); filter:blur(46px)}
   .c3{left:18%; bottom:20px; width:62%; height:320px; background:rgba(255,255,255,.28); filter:blur(56px)}
-  /* hero parallax (--hp: 0 at the top, 1 once the hero has scrolled away):
-     the words lift a little extra, the sky and clouds sink at different rates */
-  .heroposter,.herovid{translate:0 calc(var(--hp,0) * 30px)}
-  .c1{translate:0 calc(var(--hp,0) * 55px)}
-  .c2{translate:0 calc(var(--hp,0) * 100px)}
-  .c3{translate:0 calc(var(--hp,0) * 30px)}
-  .content{translate:0 calc(var(--hp,0) * -30px)}
 
   .nav{position:absolute; top:0; left:0; right:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
        padding:calc(26px + env(safe-area-inset-top)) calc(28px + env(safe-area-inset-right)) 26px calc(28px + env(safe-area-inset-left))}
@@ -324,14 +317,6 @@
   }
   /* phone-sized: words on top, phone under them, dock at the foot */
   @media (max-width:760px){
-    .nav{padding:calc(20px + env(safe-area-inset-top)) 18px 0}
-    .brand{gap:10px} .brand span{font-size:11px}
-    .nav-links{gap:14px} .nav-link{font-size:13px} .nav-cta{font-size:13px; padding:8px 14px}
-    .c3{display:none}
-    .content{padding:80px 20px calc(10vh + env(safe-area-inset-bottom))}
-    h1{font-size:clamp(40px,13.3vw,52px)}
-    .squiggle{width:160px}
-    .tagline{font-size:16px; margin-top:16px}
     .appstore.big{padding:12px 22px}
     .appstore.big .as-name{font-size:18px}
     .stage{place-items:end center; padding-bottom:calc(104px + env(safe-area-inset-bottom))}
@@ -362,6 +347,26 @@
     .props.pro > :first-child{right:auto !important; left:-6% !important; top:-3% !important}
     .props > *{--amp:16px !important}
     .cue{bottom:calc(26px + env(safe-area-inset-bottom)); font-size:14px}
+  }
+  @media (min-width:641px) and (max-height:720px){
+    h1{font-size:clamp(38px,4vw,56px)}
+    .tagline{margin-top:16px; font-size:18px}
+    .frame .appstore.big{margin-top:22px}
+    .content{padding-bottom:4vh}
+  }
+  /* the old page's phone sky (board: Landing Page REAL v2 Mobile): two
+     smaller glows instead of three */
+  @media (max-width:640px){
+    .nav{padding:calc(20px + env(safe-area-inset-top)) 18px 0}
+    .brand{gap:10px} .brand span{font-size:11px}
+    .nav-links{gap:14px} .nav-link{font-size:13px; color:rgba(244,236,216,.78)} .nav-cta{font-size:13px; padding:8px 14px}
+    .content{padding:80px 20px calc(10vh + env(safe-area-inset-bottom))}
+    h1{font-size:clamp(40px,13.3vw,52px)}
+    .squiggle{width:160px; margin-top:12px; stroke-width:11}
+    .tagline{margin-top:16px; font-size:16px}
+    .c1{left:-70px; top:130px; width:300px; height:180px; background:rgba(255,255,255,.2); filter:blur(34px)}
+    .c2{right:-80px; top:auto; bottom:90px; width:340px; height:220px; background:rgba(255,255,255,.24); filter:blur(44px)}
+    .c3{display:none}
   }
   @media (prefers-reduced-motion: reduce){
     .herovid{display:none}
