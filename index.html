@@ -26,7 +26,7 @@
 
 <style>
   /* Layout: the sky hero stays fixed; under it ONE pinned phone tells the
-     whole day (night → morning → squad → bum → standings → pro) while the
+     whole day (night → morning → squad → bum → standings) while the
      stage changes colour behind it; the screens in the phone are real app
      captures (App Screen Picker + simulator). Then the white sheet (founder,
      reviews, close). A gold App Store dock rides the bottom until the
@@ -169,7 +169,7 @@
   /* The beat's colour lives on the track, not just the pinned stage: when
      iOS Safari's toolbar collapses the screen grows past the stage's 100svh,
      and the strip under it must be the same colour, not the night base. */
-  .track{position:relative; height:calc(6 * 80svh + 100svh); background:var(--sbg,var(--night));
+  .track{position:relative; height:calc(5 * 80svh + 100svh); background:var(--sbg,var(--night));
          transition:background-color 1s cubic-bezier(.44,0,.56,1)}
   /* Motion borrowed from Stompers' showcase: one ease curve for everything
      (.44,0,.56,1), 1 s for the stage colour, 0.4 s for the screen swap. */
@@ -266,10 +266,13 @@
   .react span{font-size:20px; line-height:1}
   .react b{margin-left:6px; font-size:14px; font-weight:600}
 
-  /* the words for each beat: a small label and a short line, nothing else */
-  .label{position:absolute; bottom:max(64px,9svh); max-width:min(380px,30vw); color:var(--sfg);
-         opacity:0; transform:translateY(18px); transition:opacity .4s ease, transform .5s ease; pointer-events:none}
-  .label.on{opacity:1; transform:none}
+  /* the words for each beat: a small label and a short line, nothing else.
+     They live in the track, not the pinned stage, so they scroll past at the
+     page's own speed while the phone stays put — no fade, no animation. Each
+     sits centred on screen halfway through its beat (beats are 80svh apart). */
+  .lanes{position:absolute; inset:0; pointer-events:none; --sfg:var(--cream)}
+  .label{position:absolute; top:calc((var(--i) + .5) * 80svh + 50svh); transform:translateY(-50%);
+         max-width:min(380px,30vw); color:var(--sfg); pointer-events:none}
   .label.l{left:max(40px,5vw)}
   .label.r{right:max(40px,5vw); text-align:right}
   .label .eyebrow{display:block; font-family:var(--font-primary); font-size:13px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; opacity:.8}
@@ -280,7 +283,7 @@
   .pips i.on{opacity:1; transform:scale(1.35)}
 
   /* the last stage colour dissolves into the white sheet: white laid over the
-     plum on the same S-curve as the dusk, so it eases off the stage and eases
+     rose on the same S-curve as the dusk, so it eases off the stage and eases
      into the founder's note with no edge at either end */
   .towhite{position:relative; height:clamp(220px,36svh,380px);
            background:linear-gradient(180deg,
@@ -289,7 +292,7 @@
              rgba(255,255,255,.352) 40%, rgba(255,255,255,.425) 45%, rgba(255,255,255,.5) 50%, rgba(255,255,255,.575) 55%,
              rgba(255,255,255,.648) 60%, rgba(255,255,255,.718) 65%, rgba(255,255,255,.784) 70%, rgba(255,255,255,.844) 75%,
              rgba(255,255,255,.896) 80%, rgba(255,255,255,.939) 85%, rgba(255,255,255,.972) 90%, rgba(255,255,255,.993) 95%,
-             #FFFFFF 100%), var(--plum)}
+             #FFFFFF 100%), var(--rose)}
 
   /* the dock: one tap to the store from anywhere in the story */
   .dock{position:fixed; left:50%; bottom:calc(22px + env(safe-area-inset-bottom)); z-index:50; opacity:0;
@@ -367,7 +370,12 @@
     .appstore.big .as-name{font-size:18px}
     .stage{place-items:end center; padding-bottom:calc(104px + env(safe-area-inset-bottom))}
     .rig{height:min(56svh,480px); margin-top:0}
-    .label, .label.l, .label.r{left:20px; right:20px; max-width:none; text-align:center; top:calc(env(safe-area-inset-top) + 7svh); bottom:auto}
+    /* on a phone the words sit above the phone, so scrolling them past would
+       drag them across it: here they stay pinned and swap, as before */
+    .lanes{inset:auto; position:sticky; top:0; height:100svh; margin-top:-100svh}
+    .label, .label.l, .label.r{left:20px; right:20px; max-width:none; text-align:center; top:calc(env(safe-area-inset-top) + 7svh); bottom:auto;
+                               opacity:0; transform:translateY(18px); transition:opacity .4s ease, transform .5s ease}
+    .label.on{opacity:1; transform:none}
     .label h3{font-size:clamp(30px,8.6vw,40px); max-width:9ch; margin-inline:auto}
     .pips{display:none}
     .opt{display:none}
@@ -389,8 +397,6 @@
     /* the push stays centred over the phone's top, phone-width */
     .props > .push.lid{left:50% !important; right:auto !important;
                        width:min(340px,92vw) !important; margin-left:calc(min(340px,92vw) / -2) !important}
-    /* Pro on a phone: one chip, up in the sky corner, clear of the plans */
-    .props.pro > :first-child{right:auto !important; left:-6% !important; top:-3% !important}
     .props > *{--amp:16px !important}
     .cue{bottom:calc(26px + env(safe-area-inset-bottom)); font-size:14px}
   }
@@ -532,7 +538,6 @@
               <img class="scr" data-s="2" src="assets/screen-3-home.jpg" alt="Rise and shine: the squad's faces along the top and Amara's trail-run post below" loading="lazy">
               <img class="scr" data-s="3" src="assets/screen-4-bum-hana.jpg" alt="Hana's Bum of the Day card, full screen: 1 of 3 kept" loading="lazy">
               <img class="scr" data-s="4" src="assets/screen-5-standings.jpg" alt="Standings: Amara first with 310 points, Jade second, Miles and Jordan today's bums" loading="lazy">
-              <img class="scr" data-s="5" src="assets/screen-6-pro.jpg" alt="Pro: multiple squads, unlimited photos and video, streak shields" loading="lazy">
             </div>
           </div>
 
@@ -561,21 +566,16 @@
             <div class="trophy opt" style="right:106%; top:24%; --r:-5deg"><span class="cup">🏆</span><div><small>this week's champ</small><b>Amara</b></div></div>
             <span class="tag gold opt" style="left:-52%; top:66%; --r:-4deg">+3 per promise</span>
           </div>
-          <div class="props pro" data-s="5">
-            <div class="chip" style="right:112%; top:22%; --r:-3deg"><span class="tick">✓</span>Streak shields</div>
-            <div class="chip opt" style="left:112%; top:44%; --r:3deg"><span class="tick">✓</span>Unlimited photos &amp; video</div>
-            <div class="chip opt" style="right:112%; top:64%; --r:-2deg"><span class="tick">✓</span>More squads</div>
-          </div>
         </div>
 
-        <div class="label l on" data-s="0"><span class="eyebrow">the night before</span><h3>promise it tonight.</h3></div>
-        <div class="label r" data-s="1"><span class="eyebrow">the morning</span><h3>prove it with a photo.</h3></div>
-        <div class="label l" data-s="2"><span class="eyebrow">the squad</span><h3>see who’s actually up.</h3></div>
-        <div class="label r" data-s="3"><span class="eyebrow">bum of the day</span><h3>sleep in, get roasted.</h3></div>
-        <div class="label l" data-s="4"><span class="eyebrow">standings</span><h3>top the board.</h3></div>
-        <div class="label r" data-s="5"><span class="eyebrow">go pro</span><h3>own your mornings.</h3></div>
-
-        <div class="pips" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="pips" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="lanes">
+          <div class="label l on" data-s="0" style="--i:0"><span class="eyebrow">the night before</span><h3>promise it tonight.</h3></div>
+          <div class="label r" data-s="1" style="--i:1"><span class="eyebrow">the morning</span><h3>prove it with a photo.</h3></div>
+          <div class="label l" data-s="2" style="--i:2"><span class="eyebrow">the squad</span><h3>see who’s actually up.</h3></div>
+          <div class="label r" data-s="3" style="--i:3"><span class="eyebrow">bum of the day</span><h3>sleep in, get roasted.</h3></div>
+          <div class="label l" data-s="4" style="--i:4"><span class="eyebrow">standings</span><h3>top the board.</h3></div>
       </div>
     </div>
   </section>
@@ -652,13 +652,13 @@
 (function () {
   var track = document.getElementById('track');
   var stage = document.getElementById('stage');
-  var BG = ['#22314F', '#2F4F3E', '#4C84C4', '#8E3550', '#C4628C', '#4A3A5E'];
+  var BG = ['#22314F', '#2F4F3E', '#4C84C4', '#8E3550', '#C4628C'];
   // beat 3 leans the same way as the push lying across its top
-  var TILT = ['4deg', '-3deg', '3deg', '-1.5deg', '-2deg', '4deg'];
+  var TILT = ['4deg', '-3deg', '3deg', '-1.5deg', '-2deg'];
   var n = BG.length, cur = -1;
   var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var root = document.documentElement, ticking = false;
-  var groups = [].slice.call(stage.querySelectorAll('[data-s]'));
+  var groups = [].slice.call(track.querySelectorAll('[data-s]'));
   var pips = [].slice.call(stage.querySelectorAll('.pips i'));
   function show(i) {
     if (i === cur) return;
