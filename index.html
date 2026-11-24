@@ -377,10 +377,27 @@
     .rtrack{animation-duration:80s}
     .appstore.big{padding:12px 22px}
     .appstore.big .as-name{font-size:18px}
-    /* 136, not 104, under the phone and 52svh, not 56: a band above it and a
-       band below it, each tall enough for one floating piece */
-    .stage{place-items:end center; padding-bottom:calc(136px + env(safe-area-inset-bottom))}
-    .rig{height:min(52svh,440px); margin-top:0}
+    /* The phone takes what is LEFT between the caption and the dock, less a
+       band above and a band below for one floating piece each — it is not a
+       share of the screen any more. At 52svh a 660-tall iPhone screen left
+       50px over the phone, and the piece on its top edge rode up into the
+       caption ("sleep in, get roasted."; Kuro, 2026-11-23).
+       `--cap` is where a two-line caption ends: its 7svh top, the eyebrow
+       and gap (26px), two lines at .9 of the h3's size. `--above` holds the
+       tallest top piece (the push) less the 20px it lies over the phone;
+       `--below` is the dock (73px) plus the same for the bottom piece. */
+    .stage{--cap:calc(env(safe-area-inset-top) + 7svh + 26px + 1.8 * clamp(30px,8.6vw,40px));
+           --above:66px; --below:140px;
+           place-items:end center; padding-bottom:calc(var(--below) + env(safe-area-inset-bottom))}
+    .rig{height:min(calc(100svh - var(--cap) - var(--above) - var(--below) - env(safe-area-inset-bottom)), 480px); margin-top:0}
+    /* A short screen (under 640 of small viewport: an iPhone SE, a mini, some
+       in-app browsers) has no room for those bands: the phone keeps its old
+       size and the pieces stand down. `html.short` is set by script off
+       100svh, which Safari's sliding toolbar doesn't change, so this never
+       flips in the middle of a scroll the way a height media query does. */
+    html.short .stage{padding-bottom:calc(104px + env(safe-area-inset-bottom))}
+    html.short .rig{height:min(56svh,480px)}
+    html.short .props{display:none}
     /* on a phone the words sit above the phone, so scrolling them past would
        drag them across it: here they stay pinned and swap, as before */
     .lanes{inset:auto; position:sticky; top:0; height:100svh; margin-top:-100svh}
@@ -408,20 +425,15 @@
        tab bar, never the screen's content. `100% - 100vw` is the phone's
        side margin, so each piece stops 12px short of the viewport's edge. */
     .props > *{left:auto !important; right:calc((100% - 100vw) / 2 + 12px) !important;
-               top:auto !important; bottom:calc(100% - 18px) !important;
+               top:auto !important; bottom:calc(100% - 20px) !important;
                margin-left:0 !important; width:max-content; --amp:8px !important}
     .props > .m-low{right:auto !important; left:calc((100% - 100vw) / 2 + 12px) !important;
-                    bottom:auto !important; top:calc(100% - 16px) !important}
+                    bottom:auto !important; top:calc(100% - 20px) !important}
     .bubble{max-width:86vw}
     /* the push lies centred across the phone's top, at its own width */
     .props > .push.lid{left:50% !important; right:auto !important; width:min(340px,92vw) !important;
                        margin-left:calc(min(340px,92vw) / -2) !important}
     .cue{bottom:calc(26px + env(safe-area-inset-bottom)); font-size:14px}
-  }
-  /* a short phone screen has no band between the words and the phone:
-     the pieces stand down rather than cover either */
-  @media (max-width:760px) and (max-height:640px){
-    .props{display:none}
   }
   @media (min-width:641px) and (max-height:720px){
     h1{font-size:clamp(38px,4vw,56px)}
@@ -673,6 +685,29 @@
 </div>
 
 <script>
+/* A short phone screen: `html.short` (see the phone-sized styles). Measured
+   off a 100svh probe, not innerHeight: innerHeight grows when Safari's
+   toolbar slides away, and a layout that follows it jumps mid-scroll. Looked
+   at again only when the width changes (a rotation), never on a height-only
+   resize. */
+(function () {
+  var probe = document.createElement('div');
+  probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:100svh;visibility:hidden;pointer-events:none';
+  var w = window.innerWidth;
+  function measure() {
+    document.body.appendChild(probe);
+    var h = probe.offsetHeight || window.innerHeight;
+    document.body.removeChild(probe);
+    document.documentElement.classList.toggle('short', h < 640);
+  }
+  measure();
+  window.addEventListener('orientationchange', function () { setTimeout(measure, 300); });
+  window.addEventListener('resize', function () {
+    if (window.innerWidth === w) return;
+    w = window.innerWidth; measure();
+  });
+})();
+
 /* The story: which beat is on is how far the pinned stage has been scrolled. */
 (function () {
   var track = document.getElementById('track');
